@@ -68,6 +68,8 @@ section {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
+  margin-left: auto;
+  margin-right: auto;
   padding: 1rem;
   background-color: #333333;
   color: #CCCCCC;
