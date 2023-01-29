@@ -1,6 +1,11 @@
+import Users from "../../Users"
 
 export default function UserView() {
     return(
-        <h1>UserView</h1>
+        <>
+            <h1>UserView</h1>
+            <Users />
+        </>
+        
     )
 }
