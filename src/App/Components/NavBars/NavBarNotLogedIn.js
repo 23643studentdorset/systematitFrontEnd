@@ -1,6 +1,6 @@
 import { Button, Box } from "@mui/material";
 import { Link } from "react-router-dom";
-import Login from "../Login/Login";
+
 
 export default function NavBarNotLogedIn(){
   return (
