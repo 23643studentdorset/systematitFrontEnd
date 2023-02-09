@@ -25,7 +25,7 @@ const theme = createTheme({
       main: '#e53935',
     },
     textLight:{
-      main: '#CCCCCC',
+      main: '#cccccc',
     },
     textDark:{
       main: '#333333',

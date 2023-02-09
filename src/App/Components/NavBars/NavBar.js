@@ -7,13 +7,13 @@ export default function NavBar() {
     const { auth } = useAuth();
 
     useEffect(() => {
-        console.log("auth changed", auth);
+        //console.log("auth changed", auth);
     }, [auth]);
 
     return (
         <>
-            {console.log(auth)}
-            {auth ? <NavBarNotLogedIn /> : <NavBarLogedIn />}
+            
+            {Object.keys(auth).length === 0 ? <NavBarNotLogedIn /> : <NavBarLogedIn />}
         </>
     );
 }

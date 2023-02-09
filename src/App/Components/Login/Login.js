@@ -60,6 +60,8 @@ const Login = () => {
     }
   }
 
+  
+
   return (
       <Box m={10} sx={{ width: 500, backgroundColor: 'textDark', alignItems:"center"}}>
         <Typography sx={{color:"errorBackground", textAlign:"center"}} variant="h5"><p ref={errorRef} className={errMsg ? "errMsg" :
@@ -75,7 +77,7 @@ const Login = () => {
             autoComplete="on"
             onChange={(e) => setEmail(e.target.value)}
             value={email}
-            required          
+            required                      
           />
           <label htmlFor="password">Password:</label>
           <input
@@ -83,7 +85,7 @@ const Login = () => {
             id="password"
             onChange={(e) => setPassword(e.target.value)}
             value={password}
-            required          
+            required      
           />
           <Box marginTop={2} sx={{alignItems: 'center', textAlign:"center"}}>
             <Button size="medium" color="textLight" onClick={handleSubmit}>Sign In</Button>

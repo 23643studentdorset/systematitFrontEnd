@@ -3,10 +3,16 @@ import useAuth from '../../hooks/useAuth';
 import axios from "../../Api/axios"
 import jwt_decode from "jwt-decode";
 import Column from './KanbanBoard/Column';
+import ControlPointIcon from '@mui/icons-material/ControlPoint';
+import { Box, Button } from '@mui/material';
+import { Tooltip } from '@mui/material';
+import Modal from './KanbanBoard/Modal';
 
 export default function Kanban() {
     const [tasks, setTasks] = useState([]);
     const { auth } = useAuth();
+    const [showModal, setShowModal] = useState(false);
+    const [taskChanged, setTaskChanged] = useState(false);
     let userId
     auth ? userId = jwt_decode(auth.accessToken).UserId : userId = null
 
@@ -36,7 +42,7 @@ export default function Kanban() {
                 })
                 //console.log(response?.data)
                 isMountet && setTasks(response?.data)
-                console.log(tasks)
+                setTaskChanged(false)
             } catch (err) {
                 console.log(err)
             }
@@ -46,75 +52,90 @@ export default function Kanban() {
             isMountet = false
             controller.abort()
         }
-    }, [])
+    }, [taskChanged])
 
-    const mockData = [
-        {
-            title: 'To Do',
-            tasks: ['Task 1', 'Task 2', 'Task 3', 'Task 4'],
-            color: 'orange',
-            input: '',
-        },
-        {
-            title: 'In progress',
-            tasks: ['Task 5', 'Task 6'],
-            color: 'purple',
-            input: '',
-        },
-        {
-            title: 'Done',
-            tasks: ['Task 7', 'Task 8', 'Task 9'],
-            color: 'green',
-            input: '',
-        },
-        {
-            title: 'Cancelled',
-            tasks: ['Task 7', 'Task 8', 'Task 9'],
-            color: 'green',
-            input: '',
-        },
-        {
-            title: 'Blocked',
-            tasks: ['Task 7', 'Task 8', 'Task 9'],
-            color: 'green',
-            input: '',
-        }
+    const [toDoTasks, setToDoTasks] = useState([]);
+    const [inProgressTasks, setInProgressTasks] = useState([]);
+    const [doneTasks, setDoneTasks] = useState([]);
+    const [cancelledTasks, setCancelledTasks] = useState([]);
+    const [blockedTasks, setBlockedTasks] = useState([]);
 
-    ]
+    useEffect(() => {
+        setToDoTasks(tasks?.filter(task => task.taskStatus.name === "ToDo"))
+        setInProgressTasks(tasks?.filter(task => task.taskStatus.name === "InProgress"))
+        setDoneTasks(tasks?.filter(task => task.taskStatus.name === "Done"))
+        setCancelledTasks(tasks?.filter(task => task.taskStatus.name === "Cancelled"))
+        setBlockedTasks(tasks?.filter(task => task.taskStatus.name === "Blocked"))
+    }, [tasks])
+
+    const openAddNewTaskModal = () => {
+        setShowModal(true);
+    }
+
+    const addItem = (id) => {
+        setShowModal(false);
+        setTaskChanged(true);
+    };
+
+    const updateItem = (task) => {
+        setTaskChanged(true);
+    }
 
     const getColumnSection = () => (
         <div className="columns">
             <Column
-                itemList={mockData[0].tasks}
-                colTitle={mockData[0].title}
-                color={mockData[0].color}
+                tasksList={toDoTasks}
+                colTitle={'To Do'}
+                color={'#ffd401'}
+                updateItem={updateItem}
+                
+            />
+
+            <Column
+                tasksList={inProgressTasks}
+                colTitle={'In progress'}
+                color={'#00468e'}
+            />
+
+            <Column
+                tasksList={doneTasks}
+                colTitle={'Done'}
+                color={'#008e56'}
+
             />
             <Column
-                itemList={mockData[1].tasks}
-                colTitle={mockData[1].title}
-                color={mockData[1].color}
+                tasksList={cancelledTasks}
+                colTitle={'Cancelled'}
+                color={'#ce0019'}
             />
             <Column
-                itemList={mockData[2].tasks}
-                colTitle={mockData[2].title}
-                color={mockData[2].color}
-            />
-             <Column
-                itemList={mockData[3].tasks}
-                colTitle={mockData[3].title}
-                color={mockData[3].color}
-            />
-             <Column
-                itemList={mockData[3].tasks}
-                colTitle={mockData[3].title}
-                color={mockData[3].color}
+                tasksList={blockedTasks}
+                colTitle={'Blocked'}
+                color={'#ff6602'}
             />
         </div>
     );
     return (
         <>
             <h1>Kanban Board</h1>
+            <Box sx={{ width: "100%" }}>
+                <Tooltip title={"Add new task"}>
+                    <Button variant="contained" endIcon={<ControlPointIcon fontSize="inherit" />} onClick={openAddNewTaskModal}>
+                        Add new task
+                    </Button>
+                </Tooltip>
+            </Box>
+
+            {showModal &&
+                (<Modal
+                    showModal={showModal}
+                    setShowModal={setShowModal}
+                    addItem={addItem}
+                ></Modal>)}
+
+
             {getColumnSection()}
         </>
     )
 };
+

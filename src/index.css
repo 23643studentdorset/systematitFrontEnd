@@ -22,8 +22,7 @@ code {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 100vh;
-  background-color: #EEEEEE;
+  background-color: #fefefe;
 
 }
 
@@ -160,36 +159,19 @@ padding: 0.5rem;
 }
 
 .column {
-  background-color: #F1F1F1;
+  background-color: #f1f1f1;
   flex: 1;
   display: flex;
   align-items: center;
   flex-direction: column;
-}
-
-.item {
-  padding: 1em;
-  margin: 1em;
-  width: 250px;
-  border-top: 4px solid green;
-  border-radius: 5px;
-  height: 100px;
-  background-color: white;
-  cursor: pointer;
+  margin-top: 0.5em;
+  margin-right: 1em;
+  padding: 0.5em;
+  min-width: 16em;
 }
 
 .columnHeading {
   border-bottom: 1px solid lightgray;
-}
-
-.addNew { 
-  padding: 1em;
-  margin: 1em;
-  width: 250px;
-  border: 1px solid white;
-  background-color: white;
-  border-radius: 5px;
-  cursor: pointer;
 }
 
 .modal {
@@ -205,65 +187,13 @@ padding: 0.5rem;
   overflow: auto;
 }
 
-.modalWrapper {
-  height: 30%;    
+.modalWrapper {  
   width: 30%;
   background: white;
   position: relative;
-  /*z-index: 10;*/
+  z-index: 1200;
+  padding: 1em;
 }
 
-.m1 {
-  margin: 1em;
-}
 
-.mtl2 {
-  margin-top: 2em;
-  margin-left: 2em;
-}
-
-.mt0 {
-  margin-top: 0px;
-}
-
-.m2 {
-  margin: 2em;
-  margin-top: 0.5em;
-}
-
-.p1 {
-  margin: 1em;
-}
-
-input {
-  width: 85%;
-  height: 2em;
-  border: 1px solid lightskyblue;
-  border-radius: 5px;
-}
-
-.modalWrapper .actionButtons {
-  display: flex;
-  justify-content: flex-end;
-  position: absolute;
-  bottom: 0;
-  right: 0;
-}
-
-.actionButtons > button {
-  width: 60px;
-  height: 30px;
-  border-radius: 3px;
-  cursor: pointer;
-  border: 1px solid gray;
-}
-
-.actionButtons .save {
-  background: green;
-  color: white;
-}
-
-.actionButtons .cancel {
-  background: white;
-}
 
