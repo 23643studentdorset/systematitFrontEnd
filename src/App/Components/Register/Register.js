@@ -1,8 +1,9 @@
 import { useRef, useState, useEffect } from "react";
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import CheckOutlinedIcon from '@mui/icons-material/CheckOutlined';
-import { Button, Box, Typography } from "@mui/material";
+import { Button, Box, Typography, TextField } from "@mui/material";
 import axios from "../../../Api/axios";
+import { Navigate } from "react-router-dom";
 
 const EMAIL_REGEX = /^[a-z0-9._%+-]+@[a-z0-9.-]+.[a-z]{2,4}$/;
 const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
@@ -15,7 +16,7 @@ const REGISTER_URL = "/api/User"
 
 
 const Register = () => {
-    const emailRef = useRef();    
+    const emailRef = useRef();
     const firstNameRef = useRef();
     const lastNameRef = useRef();
     const mobileRef = useRef();
@@ -62,60 +63,60 @@ const Register = () => {
 
     const [errMsg, setErrMsg] = useState("");
     const [success, setSuccess] = useState(false);
-
+    /*
     useEffect(() => {
         firstNameRef.current.focus();
-    },[]);
-
+    }, []);
+*/
     useEffect(() => {
         const result = EMAIL_REGEX.test(email);
         setValidEmail(result);
-    },[email]);
+    }, [email]);
 
     useEffect(() => {
         const result = NAME_REGEX.test(firstName);
         //console.log(firstName)
         //console.log(result)      
         setValidFirstName(result);
-    },[firstName]);
+    }, [firstName]);
 
     useEffect(() => {
         const result = NAME_REGEX.test(lastName);
         setValidLastName(result);
-    },[lastName]);
+    }, [lastName]);
 
     useEffect(() => {
         const result = MOBILE_REGEX.test(mobile);
         setValidMobile(result);
-    },[mobile]);
+    }, [mobile]);
 
     useEffect(() => {
         const result = ADDRESS_REGEX.test(address);
         setValidAddress(result);
-    },[address]);
+    }, [address]);
 
     useEffect(() => {
         const result = ADDRESS_REGEX.test(company);
         setValidCompany(result);
-    },[company]);
+    }, [company]);
 
     useEffect(() => {
         const result = DOB_REGEX.test(dob);
         setValidDob(result);
-    },[dob]);
+    }, [dob]);
 
     useEffect(() => {
         const result = PASSWORD_REGEX.test(password);
         setValidPassword(result);
         const match = password === matchPassword;
         setValidMatch(match);
-    },[password, matchPassword]);
+    }, [password, matchPassword]);
 
     useEffect(() => {
         setErrMsg("");
-    },[email, password, matchPassword]);
-    
-    const handleSubmit = async(e) => {
+    }, [email, password, matchPassword]);
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
         const v1 = EMAIL_REGEX.test(email);
         const v2 = PASSWORD_REGEX.test(password);
@@ -123,50 +124,63 @@ const Register = () => {
         const v4 = NAME_REGEX.test(lastName);
         const v5 = MOBILE_REGEX.test(mobile);
         const v6 = DOB_REGEX.test(dob);
-        if(!v1 || !v2 || !v3 || !v4 || !v5 || !v6)
-        {
+        if (!v1 || !v2 || !v3 || !v4 || !v5 || !v6) {
             setErrMsg("One of the parameters is invalid");
             return;
         }
         try {
-            
-            const response = await axios.post(REGISTER_URL, JSON.stringify({firstName, lastName, email, mobile, address, company, dob, password}),
-            {
-                headers: {'Content-Type': 'application/json', 'Access-Control-Allow-Origin':'https://localhost:3000'}
-            });
+
+            const response = await axios.post(REGISTER_URL, JSON.stringify({ firstName, lastName, email, mobile, address, company, dob, password }),
+                {
+                    headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': 'https://localhost:3000' }
+                });
             console.log(response.data);
             console.log(response);
             setSuccess(true);
-            
+
             //post();
         } catch (error) {
             //setSuccess(true);
-            if (!error?.response){
+            if (!error?.response) {
                 setErrMsg("No server response");
-            }else if (error.response?.status === 409){
+            } else if (error.response?.status === 409) {
                 setErrMsg("Email already exists");
-            }else {
+            } else {
                 setErrMsg("Registration failed");
             }
             errorRef.current.focus();
         }
     }
 
-    return(
-        <Box m={10} sx={{ width: 500, backgroundColor: 'textDark', color:"textLight", alignItems:"center"}}>
-            <Typography sx={{textAlign:"center"}} variant="h5"><p ref={errorRef} className={errMsg ? "errMsg" :
-                        "offscreen"} aria-live="assertive">{errMsg}</p></Typography>            
-                {success ?(
+    return (
+        <Box m={10} sx={{ width: "100%", alignItems: "center" }}>
+            <Typography sx={{ textAlign: "center" }} variant="h5"><p ref={errorRef} className={errMsg ? "errMsg" :
+                "offscreen"} aria-live="assertive">{errMsg}</p></Typography>
+            {success ? (
+                <Navigate to="/Login" replace={true} />
+            ) : (
+                <Box component="form"
+                sx={{'& .MuiTextField-root': { m: 1.25, width: '25ch' },}}>
+                    <Typography sx={{ textAlign: "center", color:"#333333" }} variant="h5">Register</Typography>
                     <section>
-                        <h1>Success!</h1>
-                        <p>
-                            <a href= "http://localhost:3000/login">Sign In</a>
-                        </p>
-                    </section>
-                ) : (
-                <section>               
-                    <Typography sx={{textAlign:"center"}} variant="h5">Register</Typography>
-                    <form>
+                        <form>
+                        
+                        <TextField 
+                            sx={{ width: "66%"}}
+                            error = {!validFirstName}
+                            id="standard-error-helper-text"
+                            label="First name"
+                            helperText="Must contain only letters"
+                            variant="standard"
+                            required
+                            autoFocus
+                            color="success"
+                            onChange={(e) => setFirstName(e.target.value)}
+                            inputProps={{ style: { color: "textLight" } }}
+                            onFocus={() => setFirstNameFocus(true)}
+                         
+                            ></TextField>
+                    {/*
                         <label htmlFor="FirstName">
                             First name:
                             <span className={validFirstName ? "valid" : "hide"}>
@@ -176,7 +190,7 @@ const Register = () => {
                                 <ErrorOutlineIcon />
                             </span>
                         </label>
-                        <input 
+                        <input
                             type="text"
                             id="FirstName"
                             ref={firstNameRef}
@@ -191,7 +205,7 @@ const Register = () => {
                         <p id="nameNote" className={firstNameFocus && firstName && !validFirstName ? "instructions" : "offscreen"}>
                             <ErrorOutlineIcon /> Must contain only letters
                         </p>
-
+            */}
                         <label htmlFor="LastName">
                             Last name:
                             <span className={validLastName ? "valid" : "hide"}>
@@ -201,7 +215,7 @@ const Register = () => {
                                 <ErrorOutlineIcon />
                             </span>
                         </label>
-                        <input 
+                        <input
                             type="text"
                             id="LastName"
                             ref={lastNameRef}
@@ -226,7 +240,7 @@ const Register = () => {
                                 <ErrorOutlineIcon />
                             </span>
                         </label>
-                        <input 
+                        <input
                             type="text"
                             id="email"
                             ref={emailRef}
@@ -239,10 +253,10 @@ const Register = () => {
                             onBlur={() => setEmailFocus(false)}
                         />
                         <p id="uidnote" className={emailFocus && email && !validEmail ? "instructions" : "offscreen"}>
-                            <ErrorOutlineIcon />Email must be in the format user@example.com<br/>
-                                                Must begin with a letter<br/>
-                                                Only one @ is allowed<br/>
-                                                The suffix must be 2-4 characters long
+                            <ErrorOutlineIcon />Email must be in the format user@example.com<br />
+                            Must begin with a letter<br />
+                            Only one @ is allowed<br />
+                            The suffix must be 2-4 characters long
                         </p>
 
                         <label htmlFor="Mobile">
@@ -254,7 +268,7 @@ const Register = () => {
                                 <ErrorOutlineIcon />
                             </span>
                         </label>
-                        <input 
+                        <input
                             type="text"
                             id="Mobile"
                             ref={mobileRef}
@@ -279,7 +293,7 @@ const Register = () => {
                                 <ErrorOutlineIcon />
                             </span>
                         </label>
-                        <input 
+                        <input
                             type="text"
                             id="Address"
                             ref={addressRef}
@@ -292,10 +306,10 @@ const Register = () => {
                             onBlur={() => setAddressFocus(false)}
                         />
                         <p id="addressNote" className={addressFocus && address && !validAddress ? "instructions" : "offscreen"}>
-                            <ErrorOutlineIcon />Required field <br/>
-                                                Must contain only letters, numbers and ,'- characters
+                            <ErrorOutlineIcon />Required field <br />
+                            Must contain only letters, numbers and ,'- characters
                         </p>
-                        
+
                         <label htmlFor="Company">
                             Company:
                             <span className={validCompany ? "valid" : "hide"}>
@@ -305,7 +319,7 @@ const Register = () => {
                                 <ErrorOutlineIcon />
                             </span>
                         </label>
-                        <input 
+                        <input
                             type="text"
                             id="Company"
                             ref={companyRef}
@@ -318,8 +332,8 @@ const Register = () => {
                             onBlur={() => setCompanyFocus(false)}
                         />
                         <p id="CompanyNote" className={companyFocus && company && !validCompany ? "instructions" : "offscreen"}>
-                            <ErrorOutlineIcon />Required field <br/>
-                                                Must contain only letters
+                            <ErrorOutlineIcon />Required field <br />
+                            Must contain only letters
                         </p>
 
                         <label htmlFor="Dob">
@@ -331,7 +345,7 @@ const Register = () => {
                                 <ErrorOutlineIcon />
                             </span>
                         </label>
-                        <input 
+                        <input
                             type="text"
                             id="Dob"
                             ref={dobRef}
@@ -367,9 +381,9 @@ const Register = () => {
                             onBlur={() => setPasswordFocus(false)}
                         />
                         <p id="pwdnote" className={passwordFocus && !validPassword ? "instructions" : "offscreen"}>
-                            <ErrorOutlineIcon />Password must have 8 to 24 <br/>
-                                                Must include uppercase and lowercase letters a numeber and a special character<br/>
-                                                Allowed special characters are !@#$%^&*
+                            <ErrorOutlineIcon />Password must have 8 to 24 <br />
+                            Must include uppercase and lowercase letters a numeber and a special character<br />
+                            Allowed special characters are !@#$%^&*
                         </p>
                         <label htmlFor="confirm_password">
                             Confirm Password:
@@ -380,7 +394,7 @@ const Register = () => {
                                 <ErrorOutlineIcon />
                             </span>
                         </label>
-                        <input 
+                        <input
                             type="password"
                             id="confirm_password"
                             onChange={(e) => setMatchPassword(e.target.value)}
@@ -393,16 +407,17 @@ const Register = () => {
                         <p id="confirmnote" className={matchFocus && !validMatch ? "instructions" : "offscreen"}>
                             <ErrorOutlineIcon />Passwords must match
                         </p>
-                        <Box marginTop={2} sx={{alignItems: 'center', textAlign:"center"}}>
-                            <Button size="medium" color="textLight" disabled=
+                        <Box marginTop={2} sx={{ alignItems: 'center', textAlign: "center" }}>
+                            <Button variant="outlined" size="medium" color="textLight" disabled=
                                 {(!validEmail || !validPassword || !validMatch
-                                || !validFirstName || !validLastName || !validAddress
-                                || !validDob || !validMobile || !validCompany)? true : false} 
+                                    || !validFirstName || !validLastName || !validAddress
+                                    || !validDob || !validMobile || !validCompany) ? true : false}
                                 onClick={handleSubmit}>Register</Button>
                         </Box>
-                    </form>
-                </section>
-                )}                         
+                        </form>
+                    </section>
+                </Box>
+            )}
         </Box>
     );
 }

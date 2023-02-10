@@ -1,7 +1,7 @@
 import React from 'react'
 import Item from './Item'
 
-export default function Column({ tasksList, colTitle, color, updateItem, openUpdateModal}) {
+export default function Column({ tasksList, colTitle, color, updateItem}) {
 
     return (
         <div className="column">
@@ -17,8 +17,7 @@ export default function Column({ tasksList, colTitle, color, updateItem, openUpd
                             key={index}
                             task={i}
                             color={color}
-                            updateItem={updateItem}
-                            openUpdateModal={openUpdateModal}
+                            updateItem={updateItem}                          
                         />
                     ))
                 }

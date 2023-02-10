@@ -3,7 +3,6 @@ import NavBarLogedIn from './App/Components/NavBars/NavBarLogedIn';
 import NavBar from './App/Components/NavBars/NavBar';
 import About from './App/Components/Pages/About';
 import Contact from './App/Components/Pages/Contact';
-import Home from './App/Components/Pages/Home';
 import {Route, Routes} from 'react-router-dom';
 import { createTheme, ThemeProvider } from '@mui/material';
 import UserView from './App/Components/Pages/ProtectedRoutes/UserView';
@@ -37,7 +36,7 @@ const theme = createTheme({
 });
 function App() {
     return (
-      <ThemeProvider theme ={theme}>
+      <ThemeProvider theme = {theme}>
         <NavBar />
         <div className="container">
           <Routes>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Box, Button, TextField, Typography, Autocomplete } from '@mui/material';
+import { Box, Button, TextField, Typography, Autocomplete, Stack } from '@mui/material';
 import useAuth from '../../../hooks/useAuth'
 import axios from "../../../Api/axios"
 
@@ -114,7 +114,7 @@ function Modal({ setShowModal, addItem }) {
 
                     <Typography variant='h5'>Add task</Typography>
 
-                    <TextField id="standard-basic" label="Title" variant="standard" onChange={(e) => setTaskTitle(e.target.value)} />
+                    <TextField sx={{ width: "66%" }} id="standard-basic" label="Title" variant="standard" onChange={(e) => setTaskTitle(e.target.value)} />
 
                     <Autocomplete
                         sx={{ width: "66%" }}
@@ -148,14 +148,17 @@ function Modal({ setShowModal, addItem }) {
                         :
                         null
                     }
-                    <TextField id="standard-basic" label="Description" variant="standard" onChange={(e) => setTaskDescription(e.target.value)} />
+                    <TextField sx={{ width: "66%" }} id="standard-basic" label="Description" variant="standard" onChange={(e) => setTaskDescription(e.target.value)} />
 
-                    <Box sx={{ display: "flex" }}>
-                        <Button onClick={handleSubmit} disabled=
-                            {(taskTitle === '' || taskDepartment === '' || (taskStore === '' && stores.length < 0)
-                                || taskAssignee === '' || taskDescription === '') ? true : false} >Save</Button>
+                    <Box sx={{ marginTop: "1em", display: "flex" }}>
+                        <Stack direction="row" spacing={2}>
+                            <Button onClick={handleSubmit} variant='outlined' disabled=
+                                {(taskTitle === '' || taskDepartment === '' || (taskStore === '' && stores.length < 0)
+                                    || taskAssignee === '' || taskDescription === '') ? true : false} >Save</Button>
 
-                        <Button onClick={() => setShowModal(false)} color="error">Cancel</Button>
+                            <Button onClick={() => setShowModal(false)} variant='outlined' color="error">Cancel</Button>
+                        </Stack>
+
 
                     </Box>
                 </div>
