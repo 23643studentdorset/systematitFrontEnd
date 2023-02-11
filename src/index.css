@@ -172,10 +172,10 @@ padding: 0.5rem;
 }
 
 .modalWrapper {  
-  width: 30%;
+  width: 50%;
   background: white;
   position: relative;
-  z-index: 1200;
+  z-index: 1500;
   padding: 1em;
 }
 

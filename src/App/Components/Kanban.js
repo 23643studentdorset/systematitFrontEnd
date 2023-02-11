@@ -88,42 +88,46 @@ export default function Kanban() {
                 colTitle={'To Do'}
                 color={'#ffd401'}
                 updateItem={updateItem}
-                
             />
 
             <Column
                 tasksList={inProgressTasks}
                 colTitle={'In progress'}
                 color={'#00468e'}
+                updateItem={updateItem}
             />
 
             <Column
                 tasksList={doneTasks}
                 colTitle={'Done'}
                 color={'#008e56'}
+                updateItem={updateItem}
 
             />
             <Column
                 tasksList={cancelledTasks}
                 colTitle={'Cancelled'}
                 color={'#ce0019'}
+                updateItem={updateItem}
             />
             <Column
                 tasksList={blockedTasks}
                 colTitle={'Blocked'}
                 color={'#ff6602'}
+                updateItem={updateItem}
             />
         </div>
     );
     return (
         <>
             <h1>Kanban Board</h1>
+
             <Box sx={{ width: "100%" }}>
-                <Tooltip title={"Add new task"}>
-                    <Button variant="contained" endIcon={<ControlPointIcon fontSize="inherit" />} onClick={openAddNewTaskModal}>
-                        Add new task
-                    </Button>
-                </Tooltip>
+            <Tooltip title="add new task">
+                <Button variant="contained" endIcon={<ControlPointIcon fontSize="inherit" />} onClick={openAddNewTaskModal}>
+                    Add new task
+                </Button>
+            </Tooltip>
             </Box>
 
             {showModal &&
