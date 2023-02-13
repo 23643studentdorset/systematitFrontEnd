@@ -144,10 +144,10 @@ function UpdateModal({ task, setShowUpdateModal, changeItem }) {
             const response = await axios.put("/api/Kanban", JSON.stringify({
                 kanbanTaskId: task.kanbanTaskId,
                 title: taskTitle,
-                statusId:statusId,
-                departmentId:departmentId,
-                storeId:storeId,
-                assigneeId:assigneeId,
+                statusId: statusId,
+                departmentId: departmentId,
+                storeId: storeId,
+                assigneeId: assigneeId,
                 description: taskDescription,
             }),
                 {
@@ -157,77 +157,77 @@ function UpdateModal({ task, setShowUpdateModal, changeItem }) {
                         'Authorization': `Bearer ${auth.accessToken}`
                     }
                 });
-                if (response.status === 200)
-                    changeItem()             
+            if (response.status === 200)
+                changeItem()
         } catch (error) {
             console.log(error)
         }
     }
-    
+
     return (
         <Box component="form" sx={{ zIndex: 5 }} noValidate >
             <div className='modal'>
                 <div className='modalWrapper'>
 
                     <Typography variant='h5'>Update task: {task.title}</Typography>
-                    <Box sx={{display:"flex", marginTop: "1em"}}>
-                    <TextField sx={{ width: "40%", marginRight: "1em"}} label="Title" defaultValue={`${task.title}`} variant="standard" onChange={(e) => setTaskTitle(e.target.value)} />
+                    <Box sx={{ display: "flex", marginTop: "1em" }}>
+                        <TextField sx={{ width: "40%", marginRight: "1em" }} label="Title" defaultValue={`${task.title}`} variant="standard" onChange={(e) => setTaskTitle(e.target.value)} />
 
-                    <Autocomplete
-                        sx={{ width: "40%"}}
-                        id="Status"
-                        defaultValue={taskStatuses[task.taskStatus.statusId - 1].name}
-                        options={taskStatuses.map((option) => `${option.name}`)}
-                        renderInput={(params) => <TextField {...params} label="Status" variant="standard" onChange={(e) => setTaskStatus(e.target.value)} />}
-                        //Sets the value of the input when you chose it from the list
-                        onInputChange={(_, newInputValue) => {
-                            setTaskStatus(newInputValue);
-                        }}
-                    />
-
-                        </Box>
-                        <Box sx={{display:"flex", marginTop: "1em"}}>
-
-                    <Autocomplete
-                        sx={{ width: "40%", marginRight: "1em"}}
-                        id="department"
-                        options={departments.map((option) => `${option.name}`)}
-                        defaultValue={task.department.name}
-                        renderInput={(params) => <TextField {...params} label="Department" variant="standard" />}
-                        onInputChange={(_, newValue) => {
-                            setTaskDepartment(newValue)
-                        }}
-                        />
-                     <Autocomplete
-                        sx={{ width: "40%"}}
-                        id="assinnee"
-                        defaultValue={`${task.assignee.firstName} ${task.assignee.lastName} - ${task.assignee.email}`}
-                        options={users.map((option) => `${option.firstName} ${option.lastName} - ${option.email}`)}
-                        renderInput={(params) => <TextField {...params} label="Assinnee" variant="standard" onChange={(e) => setTaskAssignee(e.target.value)} />}
-                        //Sets the value of the input when you chose it from the list
-                        onInputChange={(_, newInputValue) => {
-                            setTaskAssignee(newInputValue);
-                        }}
-                        />
-                        </Box>
-                        <Box sx={{display:"flex", marginTop: "1em"}}>
-                            <TextField sx={{ width: "40%", marginRight: "1em"}} id="standard-basic" defaultValue={`${task.description}`} label="Description" variant="standard" onChange={(e) => setTaskDescription(e.target.value)} />
-
-                    {stores.length > 0 ?
                         <Autocomplete
-                        sx={{ width: "40%"}}
-                        id="store"
-                        options={stores.map((option) => `${option.name}`)}
-                        defaultValue={task.store !== null ? `${task.store.name}` : `N/A`}
-                        renderInput={(params) => <TextField {...params} label="Store" variant="standard" />}
-                        onInputChange={(_, newValue) => {
-                            setTaskStore(newValue)
-                        }}
+                            sx={{ width: "40%" }}
+                            id="Status"
+                            defaultValue={taskStatuses[task.taskStatus.statusId - 1].name}
+                            options={taskStatuses.map((option) => `${option.name}`)}
+                            renderInput={(params) => <TextField {...params} label="Status" variant="standard" onChange={(e) => setTaskStatus(e.target.value)} />}
+                            //Sets the value of the input when you chose it from the list
+                            onInputChange={(_, newInputValue) => {
+                                setTaskStatus(newInputValue);
+                            }}
                         />
-                        : null
-                    }
 
-                   
+                    </Box>
+                    <Box sx={{ display: "flex", marginTop: "1em" }}>
+
+                        <Autocomplete
+                            sx={{ width: "40%", marginRight: "1em" }}
+                            id="department"
+                            options={departments.map((option) => `${option.name}`)}
+                            defaultValue={task.department.name}
+                            renderInput={(params) => <TextField {...params} label="Department" variant="standard" />}
+                            onInputChange={(_, newValue) => {
+                                setTaskDepartment(newValue)
+                            }}
+                        />
+                        <Autocomplete
+                            sx={{ width: "40%" }}
+                            id="assinnee"
+                            defaultValue={`${task.assignee.firstName} ${task.assignee.lastName} - ${task.assignee.email}`}
+                            options={users.map((option) => `${option.firstName} ${option.lastName} - ${option.email}`)}
+                            renderInput={(params) => <TextField {...params} label="Assinnee" variant="standard" onChange={(e) => setTaskAssignee(e.target.value)} />}
+                            //Sets the value of the input when you chose it from the list
+                            onInputChange={(_, newInputValue) => {
+                                setTaskAssignee(newInputValue);
+                            }}
+                        />
+                    </Box>
+                    <Box sx={{ display: "flex", marginTop: "1em" }}>
+                        <TextField sx={{ width: "40%", marginRight: "1em" }} id="standard-basic" defaultValue={`${task.description}`} label="Description" variant="standard" onChange={(e) => setTaskDescription(e.target.value)} />
+
+                        {stores.length > 0 ?
+                            <Autocomplete
+                                sx={{ width: "40%" }}
+                                id="store"
+                                options={stores.map((option) => `${option.name}`)}
+                                defaultValue={task.store !== null ? `${task.store.name}` : `N/A`}
+                                renderInput={(params) => <TextField {...params} label="Store" variant="standard" />}
+                                onInputChange={(_, newValue) => {
+                                    setTaskStore(newValue)
+                                }}
+                            />
+                            : null
+                        }
+
+
 
                     </Box>
 
@@ -235,7 +235,7 @@ function UpdateModal({ task, setShowUpdateModal, changeItem }) {
                         style={{ maxHeight: 200, overflow: 'auto' }}>
 
                         {
-                            
+
                             comments.map((i, index) => (
                                 <>
                                     {index !== 0 ? <Divider variant="middle" /> : null}
@@ -256,8 +256,8 @@ function UpdateModal({ task, setShowUpdateModal, changeItem }) {
                         }
                     </List> : null}
 
-                    <Box sx={{ borderRadius: '10px', border: 0.1, borderColor: "#777777", width: "80%", p: 1, marginTop: "1em", display:"flex"}}>
-                        <TextField  sx={{ width: "90%"}} id="standard-basic" label="Add comment" variant="standard" onChange={(e) => setTaskComment(e.target.value)} />
+                    <Box sx={{ borderRadius: '10px', border: 0.1, borderColor: "#777777", width: "80%", p: 1, marginTop: "1em", display: "flex" }}>
+                        <TextField sx={{ width: "90%" }} id="standard-basic" label="Add comment" variant="standard" onChange={(e) => setTaskComment(e.target.value)} />
                         <Button variant='outlined' sx={{ marginTop: "0.2em", ml: '10em' }} onClick={sendComment}>Send</Button>
                     </Box>
 
@@ -271,6 +271,7 @@ function UpdateModal({ task, setShowUpdateModal, changeItem }) {
                 </div>
             </div>
         </Box >
+
     )
 }
 

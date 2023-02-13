@@ -6,7 +6,7 @@ import Column from './KanbanBoard/Column';
 import ControlPointIcon from '@mui/icons-material/ControlPoint';
 import { Box, Button } from '@mui/material';
 import { Tooltip } from '@mui/material';
-import Modal from './KanbanBoard/Modal';
+import AddItemModal from './KanbanBoard/AddItemModal';
 
 export default function Kanban() {
     const [tasks, setTasks] = useState([]);
@@ -131,11 +131,11 @@ export default function Kanban() {
             </Box>
 
             {showModal &&
-                (<Modal
+                (<AddItemModal
                     showModal={showModal}
                     setShowModal={setShowModal}
                     addItem={addItem}
-                ></Modal>)}
+                ></AddItemModal>)}
 
 
             {getColumnSection()}

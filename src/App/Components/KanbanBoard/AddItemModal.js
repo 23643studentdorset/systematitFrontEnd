@@ -3,7 +3,7 @@ import { Box, Button, TextField, Typography, Autocomplete, Stack } from '@mui/ma
 import useAuth from '../../../hooks/useAuth'
 import axios from "../../../Api/axios"
 
-function Modal({ setShowModal, addItem }) {
+function AddItemModal({ setShowModal, addItem }) {
     const [taskTitle, setTaskTitle] = useState('');
     const [taskDepartment, setTaskDepartment] = useState('');
     const [taskStore, setTaskStore] = useState('');
@@ -169,4 +169,4 @@ function Modal({ setShowModal, addItem }) {
     )
 }
 
-export default Modal
+export default AddItemModal

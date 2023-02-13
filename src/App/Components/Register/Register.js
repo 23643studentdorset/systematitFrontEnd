@@ -1,9 +1,16 @@
 import { useRef, useState, useEffect } from "react";
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import CheckOutlinedIcon from '@mui/icons-material/CheckOutlined';
-import { Button, Box, Typography, TextField } from "@mui/material";
+import { Button, Box, Typography, TextField, Input } from "@mui/material";
 import axios from "../../../Api/axios";
 import { Navigate } from "react-router-dom";
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
+import * as React from 'react';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import InputAdornment from '@mui/material/InputAdornment';
+import IconButton from '@mui/material/IconButton';
 
 const EMAIL_REGEX = /^[a-z0-9._%+-]+@[a-z0-9.-]+.[a-z]{2,4}$/;
 const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
@@ -17,13 +24,38 @@ const REGISTER_URL = "/api/User"
 
 const Register = () => {
     const emailRef = useRef();
-    const firstNameRef = useRef();
     const lastNameRef = useRef();
     const mobileRef = useRef();
     const addressRef = useRef();
     const companyRef = useRef();
     const dobRef = useRef();
     const errorRef = useRef();
+
+    const [openError, setOpenError] = React.useState(false);
+    const [openSuccess, setOpenSuccess] = React.useState(false);
+
+    const [showPassword, setShowPassword] = React.useState(false);
+    const handleClickShowPassword = () => setShowPassword((show) => !show);
+
+    const handleMouseDownPassword = (event) => {
+        event.preventDefault();
+    };
+
+
+    const handleClick = (option) => {
+        if (option === "success")
+            setOpenSuccess(true);
+        if (option === "error")
+            setOpenError(true);
+    };
+
+    const handleClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setOpenSuccess(false);
+        setOpenError(false);
+    };
 
     const [firstName, setFirstName] = useState("");
     const [validFirstName, setValidFirstName] = useState(false);
@@ -63,11 +95,7 @@ const Register = () => {
 
     const [errMsg, setErrMsg] = useState("");
     const [success, setSuccess] = useState(false);
-    /*
-    useEffect(() => {
-        firstNameRef.current.focus();
-    }, []);
-*/
+
     useEffect(() => {
         const result = EMAIL_REGEX.test(email);
         setValidEmail(result);
@@ -134,18 +162,16 @@ const Register = () => {
                 {
                     headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': 'https://localhost:3000' }
                 });
-            console.log(response.data);
-            console.log(response);
             setSuccess(true);
-
-            //post();
+            handleClick("success")
         } catch (error) {
-            //setSuccess(true);
+            handleClick("error")
             if (!error?.response) {
                 setErrMsg("No server response");
             } else if (error.response?.status === 409) {
                 setErrMsg("Email already exists");
             } else {
+
                 setErrMsg("Registration failed");
             }
             errorRef.current.focus();
@@ -154,33 +180,194 @@ const Register = () => {
 
     return (
         <Box m={10} sx={{ width: "100%", alignItems: "center" }}>
-            <Typography sx={{ textAlign: "center" }} variant="h5"><p ref={errorRef} className={errMsg ? "errMsg" :
-                "offscreen"} aria-live="assertive">{errMsg}</p></Typography>
+            <Snackbar anchorOrigin={{ vertical: 'top', horizontal: 'center' }} open={openSuccess} autoHideDuration={6000} onClose={handleClose}>
+                <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
+                    User created!
+                </Alert>
+            </Snackbar>
+            <Snackbar anchorOrigin={{ vertical: 'top', horizontal: 'center' }} open={openError} autoHideDuration={6000} onClose={handleClose}>
+                <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
+                    {errMsg}
+                </Alert>
+            </Snackbar>
             {success ? (
+                /*
                 <Navigate to="/Login" replace={true} />
+                */
+                null
             ) : (
                 <Box component="form"
-                sx={{'& .MuiTextField-root': { m: 1.25, width: '25ch' },}}>
-                    <Typography sx={{ textAlign: "center", color:"#333333" }} variant="h5">Register</Typography>
+                    sx={{ '& .MuiTextField-root': { m: 1.25 }, }}>
+                    <Typography sx={{ textAlign: "center", color: "#333333" }} variant="h5">Register</Typography>
                     <section>
                         <form>
-                        
-                        <TextField 
-                            sx={{ width: "66%"}}
-                            error = {!validFirstName}
-                            id="standard-error-helper-text"
-                            label="First name"
-                            helperText="Must contain only letters"
-                            variant="standard"
-                            required
-                            autoFocus
-                            color="success"
-                            onChange={(e) => setFirstName(e.target.value)}
-                            inputProps={{ style: { color: "textLight" } }}
-                            onFocus={() => setFirstNameFocus(true)}
-                         
-                            ></TextField>
-                    {/*
+                            <Box sx={{ display: "flex" }}>
+                                <TextField
+                                    sx={{ width: "50%", marginRight: "1em" }}
+                                    error={!validFirstName}
+                                    id="FirstName"
+                                    label="First name"
+                                    helperText={!validFirstName && firstNameFocus ? "Must contain only letters" : null}
+                                    variant="standard"
+                                    required
+                                    autoFocus
+                                    color="success"
+                                    onChange={(e) => setFirstName(e.target.value)}
+                                    inputProps={{ style: { color: "textLight" } }}
+                                    onFocus={() => setFirstNameFocus(true)}
+                                    onBlur={() => setFirstNameFocus(false)}
+                                />
+                                <TextField
+                                    sx={{ width: "50%" }}
+                                    error={!validLastName}
+                                    id="LastName"
+                                    label="Last name"
+                                    helperText={!validLastName && lastNameFocus ? "Must contain only letters" : null}
+                                    variant="standard"
+                                    required
+                                    color="success"
+                                    onChange={(e) => setLastName(e.target.value)}
+                                    inputProps={{ style: { color: "textLight" } }}
+                                    onFocus={() => setLastNameFocus(true)}
+                                    onBlur={() => setLastNameFocus(false)}
+                                />
+                            </Box>
+
+                            <TextField
+                                sx={{ width: "77%", marginRight: "1em" }}
+                                error={!validEmail}
+                                id="Email"
+                                label="Email"
+                                helperText={!validEmail && emailFocus ?
+                                    <>
+                                        Email must be in the format user@example.com<br />
+                                        Must begin with a letter<br />
+                                        Only one @ is allowed<br />
+                                        The suffix must be 2-4 characters long
+                                    </> : null
+                                }
+                                variant="standard"
+                                required
+                                color="success"
+                                onChange={(e) => setEmail(e.target.value)}
+                                inputProps={{ style: { color: "textLight" } }}
+                                onFocus={() => setEmailFocus(true)}
+                                onBlur={() => setEmailFocus(false)}
+                            />
+                            <Box sx={{ display: "flex" }}>
+                                <TextField
+                                    sx={{ width: "50%", marginRight: "1em" }}
+                                    error={!validMobile}
+                                    id="Mobile"
+                                    label="Mobile"
+                                    helperText={!validMobile && mobileFocus ? "Must contain only numbers" : null}
+                                    variant="standard"
+                                    required
+                                    color="success"
+                                    onChange={(e) => setMobile(e.target.value)}
+                                    inputProps={{ style: { color: "textLight" } }}
+                                    onFocus={() => setMobileFocus(true)}
+                                    onBlur={() => setMobileFocus(false)}
+                                />
+                                <TextField
+                                    sx={{ width: "50%" }}
+                                    error={!validAddress}
+                                    id="Address"
+                                    label="Address"
+                                    helperText={!validAddress && addressFocus ? "Must contain only letters, numbers and/or the characters: ,'-" : null}
+                                    variant="standard"
+                                    required
+                                    color="success"
+                                    onChange={(e) => setAddress(e.target.value)}
+                                    inputProps={{ style: { color: "textLight" } }}
+                                    onFocus={() => setAddressFocus(true)}
+                                    onBlur={() => setAddressFocus(false)}
+                                />
+                            </Box>
+
+                            <Box sx={{ display: "flex" }}>
+                                <TextField
+                                    sx={{ width: "50%", marginRight: "1em" }}
+                                    error={!validCompany}
+                                    id="Company"
+                                    label="Company"
+                                    helperText={!validCompany && companyFocus ? "Must contain only letters, numbers and/or the characters: ,'-" : null}
+                                    variant="standard"
+                                    required
+                                    color="success"
+                                    onChange={(e) => setCompany(e.target.value)}
+                                    inputProps={{ style: { color: "textLight" } }}
+                                    onFocus={() => setCompanyFocus(true)}
+                                    onBlur={() => setCompanyFocus(false)}
+                                />
+                                <TextField
+                                    sx={{ width: "50%" }}
+                                    error={!validDob}
+                                    id="DatyeOfBirth"
+                                    label="Date of birth"
+                                    helperText={!validDob && dobFocus ? "Must be in format dd/mm/yyyy" : null}
+                                    variant="standard"
+                                    required
+                                    color="success"
+                                    onChange={(e) => setDob(e.target.value)}
+                                    inputProps={{ style: { color: "textLight" } }}
+                                    onFocus={() => setDobFocus(true)}
+                                    onBlur={() => setDobFocus(false)}
+                                />
+                            </Box>
+                            <Box sx={{ display: "flex" }}>
+                                <TextField
+                                    sx={{ width: "50%" }}
+                                    error={!validPassword}
+                                    id="password"
+                                    label="Password"
+                                    helperText={!validPassword && passwordFocus ?
+                                        <>
+                                            Password must have 8 to 24 <br />
+                                            Must include uppercase and lowercase letters a numeber and a special character <br />
+                                            Allowed special characters are !@#$%^&*
+                                        </> : null}
+                                    type={showPassword ? 'text' : 'password'}
+                                    variant="standard"
+                                    color="success"
+                                    required
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    inputProps={{ style: { color: "textLight" } }}
+                                    onFocus={() => setPasswordFocus(true)}
+                                    onBlur={() => setPasswordFocus(false)}
+                                />
+                                <Box sx={{ width: "1em", height: "1em", marginTop: "1.3em" }}>
+                                    <IconButton
+                                        aria-label="toggle password visibility"
+                                        onClick={handleClickShowPassword}
+                                        onMouseDown={handleMouseDownPassword}
+                                        edge="end"
+                                    >
+                                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                                    </IconButton>
+                                </Box>
+                            </Box>
+                            <Box sx={{ display: "flex" }}>
+                                <TextField
+                                    sx={{ width: "50%" }}
+                                    error={!validMatch}
+                                    id="confirm password"
+                                    label="Comfirm password"
+                                    helperText={!validMatch && matchFocus ?
+                                        "Passwords must match" : null}
+                                    type={showPassword ? 'text' : 'password'}
+                                    variant="standard"
+                                    color="success"
+                                    required
+                                    onChange={(e) => setMatchPassword(e.target.value)}
+                                    inputProps={{ style: { color: "textLight" } }}
+                                    onFocus={() => setMatchFocus(true)}
+                                    onBlur={() => setMatchFocus(false)}
+                                />
+                            </Box>
+
+
+                            {/*
                         <label htmlFor="FirstName">
                             First name:
                             <span className={validFirstName ? "valid" : "hide"}>
@@ -205,215 +392,218 @@ const Register = () => {
                         <p id="nameNote" className={firstNameFocus && firstName && !validFirstName ? "instructions" : "offscreen"}>
                             <ErrorOutlineIcon /> Must contain only letters
                         </p>
-            */}
-                        <label htmlFor="LastName">
-                            Last name:
-                            <span className={validLastName ? "valid" : "hide"}>
-                                <CheckOutlinedIcon />
-                            </span>
-                            <span className={validLastName || !lastName ? "hide" : "invalid"}>
-                                <ErrorOutlineIcon />
-                            </span>
-                        </label>
-                        <input
-                            type="text"
-                            id="LastName"
-                            ref={lastNameRef}
-                            autoComplete="on"
-                            onChange={(e) => setLastName(e.target.value)}
-                            required
-                            aria-invalid={validLastName ? "false" : "true"}
-                            aria-describedby="nameNote"
-                            onFocus={() => setLastNameFocus(true)}
-                            onBlur={() => setLastNameFocus(false)}
-                        />
-                        <p id="nameNote" className={lastNameFocus && lastName && !validLastName ? "instructions" : "offscreen"}>
-                            <ErrorOutlineIcon /> Must contain only letters
-                        </p>
+         
+                            <label htmlFor="LastName">
+                                Last name:
+                                <span className={validLastName ? "valid" : "hide"}>
+                                    <CheckOutlinedIcon />
+                                </span>
+                                <span className={validLastName || !lastName ? "hide" : "invalid"}>
+                                    <ErrorOutlineIcon />
+                                </span>
+                            </label>
+                            <input
+                                type="text"
+                                id="LastName"
+                                ref={lastNameRef}
+                                autoComplete="on"
+                                onChange={(e) => setLastName(e.target.value)}
+                                required
+                                aria-invalid={validLastName ? "false" : "true"}
+                                aria-describedby="nameNote"
+                                onFocus={() => setLastNameFocus(true)}
+                                onBlur={() => setLastNameFocus(false)}
+                            />
+                            <p id="nameNote" className={lastNameFocus && lastName && !validLastName ? "instructions" : "offscreen"}>
+                                <ErrorOutlineIcon /> Must contain only letters
+                            </p>
+                              
 
-                        <label htmlFor="email">
-                            Email:
-                            <span className={validEmail ? "valid" : "hide"}>
-                                <CheckOutlinedIcon />
-                            </span>
-                            <span className={validEmail || !email ? "hide" : "invalid"}>
-                                <ErrorOutlineIcon />
-                            </span>
-                        </label>
-                        <input
-                            type="text"
-                            id="email"
-                            ref={emailRef}
-                            autoComplete="on"
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                            aria-invalid={validEmail ? "false" : "true"}
-                            aria-describedby="uidnote"
-                            onFocus={() => setEmailFocus(true)}
-                            onBlur={() => setEmailFocus(false)}
-                        />
-                        <p id="uidnote" className={emailFocus && email && !validEmail ? "instructions" : "offscreen"}>
-                            <ErrorOutlineIcon />Email must be in the format user@example.com<br />
-                            Must begin with a letter<br />
-                            Only one @ is allowed<br />
-                            The suffix must be 2-4 characters long
-                        </p>
+                            <label htmlFor="email">
+                                Email:
+                                <span className={validEmail ? "valid" : "hide"}>
+                                    <CheckOutlinedIcon />
+                                </span>
+                                <span className={validEmail || !email ? "hide" : "invalid"}>
+                                    <ErrorOutlineIcon />
+                                </span>
+                            </label>
+                            <input
+                                type="text"
+                                id="email"
+                                ref={emailRef}
+                                autoComplete="on"
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                                aria-invalid={validEmail ? "false" : "true"}
+                                aria-describedby="uidnote"
+                                onFocus={() => setEmailFocus(true)}
+                                onBlur={() => setEmailFocus(false)}
+                            />
+                            <p id="uidnote" className={emailFocus && email && !validEmail ? "instructions" : "offscreen"}>
+                                <ErrorOutlineIcon />Email must be in the format user@example.com<br />
+                                Must begin with a letter<br />
+                                Only one @ is allowed<br />
+                                The suffix must be 2-4 characters long
+                            </p>
+                            
 
-                        <label htmlFor="Mobile">
-                            Mobile:
-                            <span className={validMobile ? "valid" : "hide"}>
-                                <CheckOutlinedIcon />
-                            </span>
-                            <span className={validMobile || !mobile ? "hide" : "invalid"}>
-                                <ErrorOutlineIcon />
-                            </span>
-                        </label>
-                        <input
-                            type="text"
-                            id="Mobile"
-                            ref={mobileRef}
-                            autoComplete="on"
-                            onChange={(e) => setMobile(e.target.value)}
-                            required
-                            aria-invalid={validMobile ? "false" : "true"}
-                            aria-describedby="MobileNote"
-                            onFocus={() => setMobileFocus(true)}
-                            onBlur={() => setMobileFocus(false)}
-                        />
-                        <p id="MobileNote" className={mobileFocus && mobile && !validMobile ? "instructions" : "offscreen"}>
-                            <ErrorOutlineIcon /> Must contain only numbers
-                        </p>
+                            <label htmlFor="Mobile">
+                                Mobile:
+                                <span className={validMobile ? "valid" : "hide"}>
+                                    <CheckOutlinedIcon />
+                                </span>
+                                <span className={validMobile || !mobile ? "hide" : "invalid"}>
+                                    <ErrorOutlineIcon />
+                                </span>
+                            </label>
+                            <input
+                                type="text"
+                                id="Mobile"
+                                ref={mobileRef}
+                                autoComplete="on"
+                                onChange={(e) => setMobile(e.target.value)}
+                                required
+                                aria-invalid={validMobile ? "false" : "true"}
+                                aria-describedby="MobileNote"
+                                onFocus={() => setMobileFocus(true)}
+                                onBlur={() => setMobileFocus(false)}
+                            />
+                            <p id="MobileNote" className={mobileFocus && mobile && !validMobile ? "instructions" : "offscreen"}>
+                                <ErrorOutlineIcon /> Must contain only numbers
+                            </p>
 
-                        <label htmlFor="Address">
-                            Address:
-                            <span className={validAddress ? "valid" : "hide"}>
-                                <CheckOutlinedIcon />
-                            </span>
-                            <span className={validAddress || !address ? "hide" : "invalid"}>
-                                <ErrorOutlineIcon />
-                            </span>
-                        </label>
-                        <input
-                            type="text"
-                            id="Address"
-                            ref={addressRef}
-                            autoComplete="on"
-                            onChange={(e) => setAddress(e.target.value)}
-                            required
-                            aria-invalid={validAddress ? "false" : "true"}
-                            aria-describedby="addressNote"
-                            onFocus={() => setAddressFocus(true)}
-                            onBlur={() => setAddressFocus(false)}
-                        />
-                        <p id="addressNote" className={addressFocus && address && !validAddress ? "instructions" : "offscreen"}>
-                            <ErrorOutlineIcon />Required field <br />
-                            Must contain only letters, numbers and ,'- characters
-                        </p>
+                            <label htmlFor="Address">
+                                Address:
+                                <span className={validAddress ? "valid" : "hide"}>
+                                    <CheckOutlinedIcon />
+                                </span>
+                                <span className={validAddress || !address ? "hide" : "invalid"}>
+                                    <ErrorOutlineIcon />
+                                </span>
+                            </label>
+                            <input
+                                type="text"
+                                id="Address"
+                                ref={addressRef}
+                                autoComplete="on"
+                                onChange={(e) => setAddress(e.target.value)}
+                                required
+                                aria-invalid={validAddress ? "false" : "true"}
+                                aria-describedby="addressNote"
+                                onFocus={() => setAddressFocus(true)}
+                                onBlur={() => setAddressFocus(false)}
+                            />
+                            <p id="addressNote" className={addressFocus && address && !validAddress ? "instructions" : "offscreen"}>
+                                <ErrorOutlineIcon />Required field <br />
+                                Must contain only letters, numbers and ,'- characters
+                            </p>
+                             
+                            <label htmlFor="Company">
+                                Company:
+                                <span className={validCompany ? "valid" : "hide"}>
+                                    <CheckOutlinedIcon />
+                                </span>
+                                <span className={validCompany || !company ? "hide" : "invalid"}>
+                                    <ErrorOutlineIcon />
+                                </span>
+                            </label>
+                            <input
+                                type="text"
+                                id="Company"
+                                ref={companyRef}
+                                autoComplete="on"
+                                onChange={(e) => setCompany(e.target.value)}
+                                required
+                                aria-invalid={validCompany ? "false" : "true"}
+                                aria-describedby="CompanyNote"
+                                onFocus={() => setCompanyFocus(true)}
+                                onBlur={() => setCompanyFocus(false)}
+                            />
+                            <p id="CompanyNote" className={companyFocus && company && !validCompany ? "instructions" : "offscreen"}>
+                                <ErrorOutlineIcon />Required field <br />
+                                Must contain only letters
+                            </p>
 
-                        <label htmlFor="Company">
-                            Company:
-                            <span className={validCompany ? "valid" : "hide"}>
-                                <CheckOutlinedIcon />
-                            </span>
-                            <span className={validCompany || !company ? "hide" : "invalid"}>
-                                <ErrorOutlineIcon />
-                            </span>
-                        </label>
-                        <input
-                            type="text"
-                            id="Company"
-                            ref={companyRef}
-                            autoComplete="on"
-                            onChange={(e) => setCompany(e.target.value)}
-                            required
-                            aria-invalid={validCompany ? "false" : "true"}
-                            aria-describedby="CompanyNote"
-                            onFocus={() => setCompanyFocus(true)}
-                            onBlur={() => setCompanyFocus(false)}
-                        />
-                        <p id="CompanyNote" className={companyFocus && company && !validCompany ? "instructions" : "offscreen"}>
-                            <ErrorOutlineIcon />Required field <br />
-                            Must contain only letters
-                        </p>
-
-                        <label htmlFor="Dob">
-                            Date of Birth:
-                            <span className={validDob ? "valid" : "hide"}>
-                                <CheckOutlinedIcon />
-                            </span>
-                            <span className={validDob || !dob ? "hide" : "invalid"}>
-                                <ErrorOutlineIcon />
-                            </span>
-                        </label>
-                        <input
-                            type="text"
-                            id="Dob"
-                            ref={dobRef}
-                            autoComplete="on"
-                            onChange={(e) => setDob(e.target.value)}
-                            required
-                            aria-invalid={validDob ? "false" : "true"}
-                            aria-describedby="DobNote"
-                            onFocus={() => setDobFocus(true)}
-                            onBlur={() => setDobFocus(false)}
-                        />
-                        <p id="MobileNote" className={dobFocus && dob && !validDob ? "instructions" : "offscreen"}>
-                            <ErrorOutlineIcon /> Must be in format dd/mm/yyyy
-                        </p>
-
-                        <label htmlFor="password">
-                            Password:
-                            <span className={validPassword ? "valid" : "hide"}>
-                                <CheckOutlinedIcon />
-                            </span>
-                            <span className={validPassword || !password ? "hide" : "invalid"}>
-                                <ErrorOutlineIcon />
-                            </span>
-                        </label>
-                        <input
-                            type="password"
-                            id="password"
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                            aria-invalid={validPassword ? "false" : "true"}
-                            aria-describedby="pwdnote"
-                            onFocus={() => setPasswordFocus(true)}
-                            onBlur={() => setPasswordFocus(false)}
-                        />
-                        <p id="pwdnote" className={passwordFocus && !validPassword ? "instructions" : "offscreen"}>
-                            <ErrorOutlineIcon />Password must have 8 to 24 <br />
-                            Must include uppercase and lowercase letters a numeber and a special character<br />
-                            Allowed special characters are !@#$%^&*
-                        </p>
-                        <label htmlFor="confirm_password">
-                            Confirm Password:
-                            <span className={validMatch && matchPassword ? "valid" : "hide"}>
-                                <CheckOutlinedIcon />
-                            </span>
-                            <span className={validPassword || !password ? "hide" : "invalid"}>
-                                <ErrorOutlineIcon />
-                            </span>
-                        </label>
-                        <input
-                            type="password"
-                            id="confirm_password"
-                            onChange={(e) => setMatchPassword(e.target.value)}
-                            required
-                            aria-invalid={validMatch ? "false" : "true"}
-                            aria-describedby="confirmnote"
-                            onFocus={() => setMatchFocus(true)}
-                            onBlur={() => setMatchFocus(false)}
-                        />
-                        <p id="confirmnote" className={matchFocus && !validMatch ? "instructions" : "offscreen"}>
-                            <ErrorOutlineIcon />Passwords must match
-                        </p>
-                        <Box marginTop={2} sx={{ alignItems: 'center', textAlign: "center" }}>
-                            <Button variant="outlined" size="medium" color="textLight" disabled=
-                                {(!validEmail || !validPassword || !validMatch
-                                    || !validFirstName || !validLastName || !validAddress
-                                    || !validDob || !validMobile || !validCompany) ? true : false}
-                                onClick={handleSubmit}>Register</Button>
-                        </Box>
+                            <label htmlFor="Dob">
+                                Date of Birth:
+                                <span className={validDob ? "valid" : "hide"}>
+                                    <CheckOutlinedIcon />
+                                </span>
+                                <span className={validDob || !dob ? "hide" : "invalid"}>
+                                    <ErrorOutlineIcon />
+                                </span>
+                            </label>
+                            <input
+                                type="text"
+                                id="Dob"
+                                ref={dobRef}
+                                autoComplete="on"
+                                onChange={(e) => setDob(e.target.value)}
+                                required
+                                aria-invalid={validDob ? "false" : "true"}
+                                aria-describedby="DobNote"
+                                onFocus={() => setDobFocus(true)}
+                                onBlur={() => setDobFocus(false)}
+                            />
+                            <p id="MobileNote" className={dobFocus && dob && !validDob ? "instructions" : "offscreen"}>
+                                <ErrorOutlineIcon /> Must be in format dd/mm/yyyy
+                            </p>
+                                
+                            <label htmlFor="password">
+                                Password:
+                                <span className={validPassword ? "valid" : "hide"}>
+                                    <CheckOutlinedIcon />
+                                </span>
+                                <span className={validPassword || !password ? "hide" : "invalid"}>
+                                    <ErrorOutlineIcon />
+                                </span>
+                            </label>
+                            <input
+                                type="password"
+                                id="password"
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
+                                aria-invalid={validPassword ? "false" : "true"}
+                                aria-describedby="pwdnote"
+                                onFocus={() => setPasswordFocus(true)}
+                                onBlur={() => setPasswordFocus(false)}
+                            />
+                            <p id="pwdnote" className={passwordFocus && !validPassword ? "instructions" : "offscreen"}>
+                                <ErrorOutlineIcon />Password must have 8 to 24 <br />
+                                Must include uppercase and lowercase letters a numeber and a special character<br />
+                                Allowed special characters are !@#$%^&*
+                            </p>
+                            <label htmlFor="confirm_password">
+                                Confirm Password:
+                                <span className={validMatch && matchPassword ? "valid" : "hide"}>
+                                    <CheckOutlinedIcon />
+                                </span>
+                                <span className={validPassword || !password ? "hide" : "invalid"}>
+                                    <ErrorOutlineIcon />
+                                </span>
+                            </label>
+                            <input
+                                type="password"
+                                id="confirm_password"
+                                onChange={(e) => setMatchPassword(e.target.value)}
+                                required
+                                aria-invalid={validMatch ? "false" : "true"}
+                                aria-describedby="confirmnote"
+                                onFocus={() => setMatchFocus(true)}
+                                onBlur={() => setMatchFocus(false)}
+                            />
+                            <p id="confirmnote" className={matchFocus && !validMatch ? "instructions" : "offscreen"}>
+                                <ErrorOutlineIcon />Passwords must match
+                            </p>
+                            */}
+                            <Box marginTop={2} sx={{ alignItems: 'center', textAlign: "center" }}>
+                                <Button variant="outlined" size="medium" disabled=
+                                    {(!validEmail || !validPassword || !validMatch
+                                        || !validFirstName || !validLastName || !validAddress
+                                        || !validDob || !validMobile || !validCompany) ? true : false}
+                                    onClick={handleSubmit}>Register</Button>
+                            </Box>
                         </form>
                     </section>
                 </Box>

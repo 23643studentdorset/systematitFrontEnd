@@ -102,15 +102,13 @@ const Login = () => {
  */}
           <TextField
             sx={{ width: "66%" }}
-            id="standard-password-input"
+            id="password"
             label="Password"
             type="password"
             variant="standard"
             required
-            autoFocus
             onChange={(e) => setPassword(e.target.value)}
             inputProps={{ style: { color: "textLight" } }}
-
           ></TextField>
 
           <Box marginTop={2} sx={{ alignItems: 'center', textAlign: "center" }}>
