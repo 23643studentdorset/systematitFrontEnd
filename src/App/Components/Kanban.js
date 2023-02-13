@@ -77,7 +77,7 @@ export default function Kanban() {
         setTaskChanged(true);
     };
 
-    const updateItem = (task) => {
+    const updateItem = () => {
         setTaskChanged(true);
     }
 

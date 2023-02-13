@@ -64,7 +64,6 @@ function Item({ task, color, updateItem}) {
         <div>
         {showUpdateModal &&
             (<UpdateModal 
-                showUpdateModal={showUpdateModal}
                 setShowUpdateModal={setShowUpdateModal}
                 changeItem={changeItem}
                 task = {task}

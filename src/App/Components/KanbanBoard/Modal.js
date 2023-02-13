@@ -79,7 +79,7 @@ function Modal({ setShowModal, addItem }) {
     const createNewTask = async () => {
         const assigneeId = users.find((user) => user.email === taskAssignee.split(" - ")[1]).userId
         const departmentId = departments.find((department) => department.name === taskDepartment).departmentId
-        const storeId = stores.length > 0 ? stores.find((store) => store.name === taskStore).storeId : 0
+        const storeId = stores.length > 0 && taskStore !== "" ? stores.find((store) => store.name === taskStore).storeId : 0
         try {
             const response = await axios.post("/api/Kanban", JSON.stringify({
                 title: taskTitle,

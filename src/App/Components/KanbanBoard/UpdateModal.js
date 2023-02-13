@@ -138,7 +138,7 @@ function UpdateModal({ task, setShowUpdateModal, changeItem }) {
     const updateTask = async () => {
         const assigneeId = users.find((user) => user.email === taskAssignee.split(" - ")[1]).userId
         const departmentId = departments.find((department) => department.name === taskDepartment).departmentId
-        const storeId = stores.length > 0 ? stores.find((store) => store.name === taskStore).storeId : 0
+        const storeId = stores.length > 0 && taskStore !== "N/A" ? stores.find((store) => store.name === taskStore).storeId : 0
         const statusId = taskStatuses.find((status) => status.name === taskStatus).statusId
         try {
             const response = await axios.put("/api/Kanban", JSON.stringify({
@@ -157,6 +157,8 @@ function UpdateModal({ task, setShowUpdateModal, changeItem }) {
                         'Authorization': `Bearer ${auth.accessToken}`
                     }
                 });
+                if (response.status === 200)
+                    changeItem()             
         } catch (error) {
             console.log(error)
         }
