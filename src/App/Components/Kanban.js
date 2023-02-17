@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState} from 'react';
 import useAuth from '../../hooks/useAuth';
-import axios from "../../Api/axios"
 import jwt_decode from "jwt-decode";
 import Column from './KanbanBoard/Column';
 import ControlPointIcon from '@mui/icons-material/ControlPoint';
@@ -9,27 +8,17 @@ import { Tooltip } from '@mui/material';
 import AddItemModal from './KanbanBoard/AddItemModal';
 
 export default function Kanban() {
-    const [tasks, setTasks] = useState([]);
-    const { auth } = useAuth();
     const [showModal, setShowModal] = useState(false);
     const [taskChanged, setTaskChanged] = useState(false);
-    let userId
-    auth ? userId = jwt_decode(auth.accessToken).UserId : userId = null
-
-
-
-
+ 
+    /*
     useEffect(() => {
         let isMountet = true
         const controller = new AbortController();
 
         const getTaskFromUser = async () => {
             try {
-                /*
-                const response = await axiosPrivate.get("/api/User", {
-                    signal: controller.signal
-                });
-                */
+                
                 //console.log(auth)
 
                 const response = await axios.get(`/api/Kanban/UserId?userId=${userId}`, {
@@ -53,13 +42,13 @@ export default function Kanban() {
             controller.abort()
         }
     }, [taskChanged])
-
+    
     const [toDoTasks, setToDoTasks] = useState([]);
     const [inProgressTasks, setInProgressTasks] = useState([]);
     const [doneTasks, setDoneTasks] = useState([]);
     const [cancelledTasks, setCancelledTasks] = useState([]);
     const [blockedTasks, setBlockedTasks] = useState([]);
-
+    
     useEffect(() => {
         setToDoTasks(tasks?.filter(task => task.taskStatus.name === "ToDo"))
         setInProgressTasks(tasks?.filter(task => task.taskStatus.name === "InProgress"))
@@ -67,67 +56,31 @@ export default function Kanban() {
         setCancelledTasks(tasks?.filter(task => task.taskStatus.name === "Cancelled"))
         setBlockedTasks(tasks?.filter(task => task.taskStatus.name === "Blocked"))
     }, [tasks])
+    */
 
     const openAddNewTaskModal = () => {
         setShowModal(true);
     }
-
-    const addItem = (id) => {
+    
+    const addItem = () => {
         setShowModal(false);
-        setTaskChanged(true);
+        updateItem(true);
     };
-
-    const updateItem = () => {
-        setTaskChanged(true);
+    
+    const updateItem = (itemAdded) => {
+        setTaskChanged(itemAdded);
     }
 
-    const getColumnSection = () => (
-        <div className="columns">
-            <Column
-                tasksList={toDoTasks}
-                colTitle={'To Do'}
-                color={'#ffd401'}
-                updateItem={updateItem}
-            />
-
-            <Column
-                tasksList={inProgressTasks}
-                colTitle={'In progress'}
-                color={'#00468e'}
-                updateItem={updateItem}
-            />
-
-            <Column
-                tasksList={doneTasks}
-                colTitle={'Done'}
-                color={'#008e56'}
-                updateItem={updateItem}
-
-            />
-            <Column
-                tasksList={cancelledTasks}
-                colTitle={'Cancelled'}
-                color={'#ce0019'}
-                updateItem={updateItem}
-            />
-            <Column
-                tasksList={blockedTasks}
-                colTitle={'Blocked'}
-                color={'#ff6602'}
-                updateItem={updateItem}
-            />
-        </div>
-    );
     return (
         <>
             <h1>Kanban Board</h1>
 
             <Box sx={{ width: "100%" }}>
-            <Tooltip title="add new task">
-                <Button variant="contained" endIcon={<ControlPointIcon fontSize="inherit" />} onClick={openAddNewTaskModal}>
-                    Add new task
-                </Button>
-            </Tooltip>
+                <Tooltip title="add new task">
+                    <Button variant="contained" endIcon={<ControlPointIcon fontSize="inherit" />} onClick={openAddNewTaskModal}>
+                        Add new task
+                    </Button>
+                </Tooltip>
             </Box>
 
             {showModal &&
@@ -137,8 +90,44 @@ export default function Kanban() {
                     addItem={addItem}
                 ></AddItemModal>)}
 
-
-            {getColumnSection()}
+            <div className="columns">
+                <Column
+                    //tasksList={toDoTasks}
+                    colTitle={'To Do'}
+                    color={'#ffd401'}
+                    updateItem={updateItem}
+                    taskChanged={taskChanged}
+                    
+                />
+                <Column
+                    //tasksList={inProgressTasks}
+                    colTitle={'In Progress'}       
+                    color={'#00468e'}
+                    taskChanged={taskChanged}
+                    updateItem={updateItem}
+                />
+                <Column
+                    //tasksList={doneTasks}
+                    colTitle={'Done'}
+                    color={'#008e56'}
+                    taskChanged={taskChanged}
+                    updateItem={updateItem}
+                />
+                <Column
+                    //tasksList={cancelledTasks}
+                    colTitle={'Cancelled'}
+                    color={'#ce0019'}
+                    taskChanged={taskChanged}
+                    updateItem={updateItem}
+                />
+                <Column
+                    //tasksList={blockedTasks}
+                    colTitle={'Blocked'}
+                    color={'#ff6602'}
+                    taskChanged={taskChanged}
+                    updateItem={updateItem}
+                />
+            </div>
         </>
     )
 };

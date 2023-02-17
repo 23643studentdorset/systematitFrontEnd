@@ -3,18 +3,17 @@ import { useEffect, useState } from 'react';
 import useAuth from '../../../hooks/useAuth'
 import axios from "../../../Api/axios"
 import TextField from '@mui/material/TextField';
+import React from 'react';
 
 
-
-function UpdateModal({ task, setShowUpdateModal, changeItem }) {
+function UpdateModal({ task, setShowUpdateModal, renderColumn }) {
 
     const [taskTitle, setTaskTitle] = useState(task.title);
-    const [taskStatus, setTaskStatus] = useState(task.status);
+    const [taskStatus, setTaskStatus] = useState(task.taskStatus.name);
     const [taskDepartment, setTaskDepartment] = useState(task.department);
     const [taskStore, setTaskStore] = useState(task.store);
     const [taskAssignee, setTaskAssignee] = useState(task.assignee);
     const [taskDescription, setTaskDescription] = useState(task.description);
-
 
     const [users, setUsers] = useState([]);
     const [departments, setDepartments] = useState([]);
@@ -24,8 +23,6 @@ function UpdateModal({ task, setShowUpdateModal, changeItem }) {
     const [taskComment, setTaskComment] = useState("");
     const [comments, setComments] = useState(task.comments);
     const { auth } = useAuth();
-
-    const [newComment, setNewComment] = useState(false)
 
     useEffect(() => {
         let isMountet = true
@@ -86,9 +83,10 @@ function UpdateModal({ task, setShowUpdateModal, changeItem }) {
             isMountet = false
             controller.abort()
         }
-    }, [newComment])
+    }, [])
 
     const sendComment = async () => {
+        setTaskComment("")
         try {
             const response = await axios.post("/api/Kanban/CreateComment", JSON.stringify({
                 comment: taskComment,
@@ -117,7 +115,7 @@ function UpdateModal({ task, setShowUpdateModal, changeItem }) {
                         'Authorization': `Bearer ${auth.accessToken}`
                     }
                 })
-            console.log(response?.data)
+            //console.log(response?.data)
             setComments(response?.data)
         } catch (error) {
             console.log(error)
@@ -125,11 +123,14 @@ function UpdateModal({ task, setShowUpdateModal, changeItem }) {
     }
 
     const handleSubmit = () => {
-
+        //console.log(taskStore)
         if (taskTitle.length > 0 && taskStatus.length > 0
-            && taskDepartment.length > 0 && taskStore.length > 0
-            && taskAssignee.length > 0 && taskDescription.length > 0) {
+            && taskDepartment.length > 0 && taskAssignee.length > 0
+            && taskDescription.length > 0) {
             updateTask()
+            console.log("task.status: " + task.taskStatus.name)
+            const status = task.taskStatus.name.replace(/\s+/g, '')
+            renderColumn(taskStatus, status)
             setShowUpdateModal(false)
         }
 
@@ -138,7 +139,7 @@ function UpdateModal({ task, setShowUpdateModal, changeItem }) {
     const updateTask = async () => {
         const assigneeId = users.find((user) => user.email === taskAssignee.split(" - ")[1]).userId
         const departmentId = departments.find((department) => department.name === taskDepartment).departmentId
-        const storeId = stores.length > 0 && taskStore !== "N/A" ? stores.find((store) => store.name === taskStore).storeId : 0
+        const storeId = stores.length > 0 && taskStore !== "N/A" && taskStore !== "" ? stores.find((store) => store.name === taskStore).storeId : 0
         const statusId = taskStatuses.find((status) => status.name === taskStatus).statusId
         try {
             const response = await axios.put("/api/Kanban", JSON.stringify({
@@ -157,15 +158,13 @@ function UpdateModal({ task, setShowUpdateModal, changeItem }) {
                         'Authorization': `Bearer ${auth.accessToken}`
                     }
                 });
-            if (response.status === 200)
-                changeItem()
         } catch (error) {
             console.log(error)
         }
     }
 
     return (
-        <Box component="form" sx={{ zIndex: 5 }} noValidate >
+        <Box component="form" noValidate >
             <div className='modal'>
                 <div className='modalWrapper'>
 
@@ -226,28 +225,29 @@ function UpdateModal({ task, setShowUpdateModal, changeItem }) {
                             />
                             : null
                         }
-
-
-
                     </Box>
-
+                   
                     {comments.length > 0 ? <List sx={{ marginTop: "1em", width: '80%', borderRadius: '10px', border: 0.1, borderColor: "#777777" }}
                         style={{ maxHeight: 200, overflow: 'auto' }}>
 
                         {
-
                             comments.map((i, index) => (
                                 <>
+
                                     {index !== 0 ? <Divider variant="middle" /> : null}
                                     <ListItem alignItems="flex-start"
                                         key={index}>
-                                        <Tooltip title={`Reporter ${task.reporter.firstName} ${task.reporter.lastName}`}>
-                                            <IconButton sx={{ border: 0.1, marginRight: 1, backgroundColor: "#eeeeff" }}>
+                                        <Tooltip title={`Reporter ${task.reporter.firstName}`}>
+                                            <Box sx={{
+                                                borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                border: 0.1, marginRight: 1, backgroundColor: "#eeeeff", width: "3em", height: "3em"
+                                            }}>
                                                 <Typography variant="body2">
-                                                    {task.reporter.firstName[0]}{task.reporter.lastName[0]}
+                                                    {task.reporter.firstName[0]}
                                                 </Typography>
-                                            </IconButton>
+                                            </Box>
                                         </Tooltip>
+
                                         <ListItemText
                                             primary={`${i.description}`} />
                                     </ListItem>
@@ -255,7 +255,7 @@ function UpdateModal({ task, setShowUpdateModal, changeItem }) {
                             ))
                         }
                     </List> : null}
-
+    
                     <Box sx={{ borderRadius: '10px', border: 0.1, borderColor: "#777777", width: "80%", p: 1, marginTop: "1em", display: "flex" }}>
                         <TextField sx={{ width: "90%" }} id="standard-basic" label="Add comment" variant="standard" onChange={(e) => setTaskComment(e.target.value)} />
                         <Button variant='outlined' sx={{ marginTop: "0.2em", ml: '10em' }} onClick={sendComment}>Send</Button>

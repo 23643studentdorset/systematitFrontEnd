@@ -1,16 +1,15 @@
 import React from 'react'
 import Card from '@mui/material/Card';
 import Typography from '@mui/material/Typography';
-import { Button, CardActionArea } from '@mui/material';
+import { CardActionArea } from '@mui/material';
 import Tooltip from '@mui/material/Tooltip';
-import IconButton from '@mui/material/IconButton';
 import Box from '@mui/material/Box';
 import { useState } from 'react';
 import UpdateModal from './UpdateModal';
 import { Modal } from '@mui/material';
 
 
-function Item({ task, color, updateItem }) {
+function Item({ task, color, renderColumn }) {
     const [showUpdateModal, setShowUpdateModal] = useState(false);
 
 
@@ -19,14 +18,10 @@ function Item({ task, color, updateItem }) {
     }
 
     const openTaskDetails = () => {
-        console.log(`Open task: ${task.kanbanTaskId}`);
+        //console.log(`Open task: ${task.kanbanTaskId}`);
         openUpdateModal();
-        updateItem(task);
+        
     }
-
-    const changeItem = () => {
-        setShowUpdateModal(false);
-    };
 
     return (
         <>
@@ -36,28 +31,33 @@ function Item({ task, color, updateItem }) {
                         <Tooltip title={"Taks name"}>
                             <Typography gutterBottom variant="h6" component="div" color={"textDark"}>
                                 {task.title}
-                            </Typography>
+                            </Typography>   
                         </Tooltip>
-                        <Tooltip title={`Assigne ${task.assignee.firstName} ${task.assignee.lastName}`}>
-                            <IconButton sx={{ border: 0.1, marginRight: 1, backgroundColor: "#ffffee" }}>
-                                <Typography variant="body2">
-                                    {task.assignee.firstName[0]}{task.assignee.lastName[0]}
-                                </Typography>
-                            </IconButton>
-                        </Tooltip>
-                        <Tooltip title={`Reporter ${task.reporter.firstName} ${task.reporter.lastName}`}>
-                            <IconButton sx={{ border: 0.1, marginRight: 1, backgroundColor: "#eeeeff" }}>
-                                <Typography variant="body2">
-                                    {task.reporter.firstName[0]}{task.reporter.lastName[0]}
-                                </Typography>
-                            </IconButton>
-                        </Tooltip>
+                        <Box sx={{display:"flex"}}>
+                            <Tooltip title={`Assigne ${task.assignee.firstName} ${task.assignee.lastName}`}>
+                                <Box sx={{borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', 
+                                border: 0.1, marginRight: 1, backgroundColor: "#ffffee", width:"3em", height:"3em" }}>
+                                    <Typography variant="body2">
+                                        {task.assignee.firstName[0]}{task.assignee.lastName[0]}
+                                    </Typography>
+                                </Box>
+                            </Tooltip>
+                            <Tooltip title={`Reporter ${task.reporter.firstName} ${task.reporter.lastName}`}>
+                                <Box sx={{borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', 
+                                border: 0.1, marginRight: 1, backgroundColor: "#eeeeff", width:"3em", height:"3em"  }}>
+                                    <Typography variant="body2">
+                                        {task.reporter.firstName[0]}{task.reporter.lastName[0]}
+                                    </Typography>
+                                </Box>
+                            </Tooltip>
+                        </Box>
+
                         <Tooltip title={`Task created on`}>
-                            <Button sx={{ color: "#888888" }}>
+                            <Box sx={{ color: "#888888", marginTop: 1 }}>
                                 <Typography variant="body2" color="textDark">
                                     {formatDate(task.createdOn)}
                                 </Typography>
-                            </Button>
+                            </Box>
                         </Tooltip>
                     </Box>
                 </CardActionArea>
@@ -66,11 +66,11 @@ function Item({ task, color, updateItem }) {
                 {showUpdateModal &&
                     (<Modal
                         open={openUpdateModal}
-                        onClose={changeItem}
+                        onClose={renderColumn}
                     >
                         <UpdateModal
                             setShowUpdateModal={setShowUpdateModal}
-                            changeItem={changeItem}
+                            renderColumn={renderColumn}
                             task={task}
                         ></UpdateModal></Modal>)}
             </div>

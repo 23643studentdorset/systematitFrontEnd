@@ -96,7 +96,7 @@ function AddItemModal({ setShowModal, addItem }) {
                     }
                 });
             if (response.status === 200) {
-                addItem(response.data)
+                addItem(true)
             }
         } catch (err) {
             console.log(err)
