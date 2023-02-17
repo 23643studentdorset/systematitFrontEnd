@@ -226,36 +226,37 @@ function UpdateModal({ task, setShowUpdateModal, renderColumn }) {
                             : null
                         }
                     </Box>
-                   
+
                     {comments.length > 0 ? <List sx={{ marginTop: "1em", width: '80%', borderRadius: '10px', border: 0.1, borderColor: "#777777" }}
                         style={{ maxHeight: 200, overflow: 'auto' }}>
 
                         {
+
                             comments.map((i, index) => (
-                                <>
-
+                                <Box>
                                     {index !== 0 ? <Divider variant="middle" /> : null}
-                                    <ListItem alignItems="flex-start"
-                                        key={index}>
-                                        <Tooltip title={`Reporter ${task.reporter.firstName}`}>
-                                            <Box sx={{
-                                                borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                                border: 0.1, marginRight: 1, backgroundColor: "#eeeeff", width: "3em", height: "3em"
-                                            }}>
-                                                <Typography variant="body2">
-                                                    {task.reporter.firstName[0]}
-                                                </Typography>
-                                            </Box>
-                                        </Tooltip>
-
-                                        <ListItemText
-                                            primary={`${i.description}`} />
-                                    </ListItem>
-                                </>
+                                <ListItem
+                                    key={index}
+                                    alignItems="flex-start">
+                                   
+                                    <Tooltip title={`Reporter ${task.reporter.firstName}`}>
+                                        <Box sx={{
+                                            borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                            border: 0.1, marginRight: 1, backgroundColor: "#eeeeff", width: "3em", height: "3em"
+                                        }}>
+                                            <Typography variant="body2">
+                                                {task.reporter.firstName[0]}
+                                            </Typography>
+                                        </Box>
+                                    </Tooltip>
+                                    <ListItemText
+                                        primary={`${i.description}`} />
+                                </ListItem>
+                        </Box>
                             ))
                         }
                     </List> : null}
-    
+
                     <Box sx={{ borderRadius: '10px', border: 0.1, borderColor: "#777777", width: "80%", p: 1, marginTop: "1em", display: "flex" }}>
                         <TextField sx={{ width: "90%" }} id="standard-basic" label="Add comment" variant="standard" onChange={(e) => setTaskComment(e.target.value)} />
                         <Button variant='outlined' sx={{ marginTop: "0.2em", ml: '10em' }} onClick={sendComment}>Send</Button>
