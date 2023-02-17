@@ -235,24 +235,23 @@ function UpdateModal({ task, setShowUpdateModal, renderColumn }) {
                             comments.map((i, index) => (
                                 <Box>
                                     {index !== 0 ? <Divider variant="middle" /> : null}
-                                <ListItem
-                                    key={index}
-                                    alignItems="flex-start">
-                                   
-                                    <Tooltip title={`Reporter ${task.reporter.firstName}`}>
-                                        <Box sx={{
-                                            borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                            border: 0.1, marginRight: 1, backgroundColor: "#eeeeff", width: "3em", height: "3em"
-                                        }}>
-                                            <Typography variant="body2">
-                                                {task.reporter.firstName[0]}
-                                            </Typography>
-                                        </Box>
-                                    </Tooltip>
-                                    <ListItemText
-                                        primary={`${i.description}`} />
-                                </ListItem>
-                        </Box>
+                                    <ListItem
+                                        key={index}
+                                        alignItems="flex-start">
+                                        <Tooltip title={`Reporter ${task.reporter.firstName}`}>
+                                            <Box sx={{
+                                                borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                border: 0.1, marginRight: 1, backgroundColor: "#eeeeff", width: "3em", height: "3em"
+                                            }}>
+                                                <Typography variant="body2">
+                                                    {task.reporter.firstName[0]}
+                                                </Typography>
+                                            </Box>
+                                        </Tooltip>
+                                        <ListItemText
+                                            primary={`${i.description}`} />
+                                    </ListItem>
+                                </Box>
                             ))
                         }
                     </List> : null}
