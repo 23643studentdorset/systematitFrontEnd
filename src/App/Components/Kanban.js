@@ -7,56 +7,10 @@ import { Box, Button } from '@mui/material';
 import { Tooltip } from '@mui/material';
 import AddItemModal from './KanbanBoard/AddItemModal';
 
-export default function Kanban() {
+
+export default function Kanban({KanbanTitle, departmentId, userId}) {
     const [showModal, setShowModal] = useState(false);
     const [taskChanged, setTaskChanged] = useState(false);
- 
-    /*
-    useEffect(() => {
-        let isMountet = true
-        const controller = new AbortController();
-
-        const getTaskFromUser = async () => {
-            try {
-                
-                //console.log(auth)
-
-                const response = await axios.get(`/api/Kanban/UserId?userId=${userId}`, {
-                    signal: controller.signal,
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Access-Control-Allow-Origin': 'https://localhost:3000',
-                        'Authorization': `Bearer ${auth.accessToken}`
-                    }
-                })
-                //console.log(response?.data)
-                isMountet && setTasks(response?.data)
-                setTaskChanged(false)
-            } catch (err) {
-                console.log(err)
-            }
-        }
-        getTaskFromUser();
-        return () => {
-            isMountet = false
-            controller.abort()
-        }
-    }, [taskChanged])
-    
-    const [toDoTasks, setToDoTasks] = useState([]);
-    const [inProgressTasks, setInProgressTasks] = useState([]);
-    const [doneTasks, setDoneTasks] = useState([]);
-    const [cancelledTasks, setCancelledTasks] = useState([]);
-    const [blockedTasks, setBlockedTasks] = useState([]);
-    
-    useEffect(() => {
-        setToDoTasks(tasks?.filter(task => task.taskStatus.name === "ToDo"))
-        setInProgressTasks(tasks?.filter(task => task.taskStatus.name === "InProgress"))
-        setDoneTasks(tasks?.filter(task => task.taskStatus.name === "Done"))
-        setCancelledTasks(tasks?.filter(task => task.taskStatus.name === "Cancelled"))
-        setBlockedTasks(tasks?.filter(task => task.taskStatus.name === "Blocked"))
-    }, [tasks])
-    */
 
     const openAddNewTaskModal = () => {
         setShowModal(true);
@@ -73,7 +27,7 @@ export default function Kanban() {
 
     return (
         <>
-            <h1>Kanban Board</h1>
+            <h1>{KanbanTitle} kanban board</h1>
 
             <Box sx={{ width: "100%" }}>
                 <Tooltip title="add new task">
@@ -92,7 +46,8 @@ export default function Kanban() {
 
             <div className="columns">
                 <Column
-                    //tasksList={toDoTasks}
+                    userId={userId}
+                    departmentId = {departmentId}
                     colTitle={'To Do'}
                     color={'#ffd401'}
                     updateItem={updateItem}
@@ -100,28 +55,32 @@ export default function Kanban() {
                     
                 />
                 <Column
-                    //tasksList={inProgressTasks}
+                    userId={userId}
+                    departmentId = {departmentId}
                     colTitle={'In Progress'}       
                     color={'#00468e'}
                     taskChanged={taskChanged}
                     updateItem={updateItem}
                 />
                 <Column
-                    //tasksList={doneTasks}
+                    userId={userId}
+                    departmentId = {departmentId}
                     colTitle={'Done'}
                     color={'#008e56'}
                     taskChanged={taskChanged}
                     updateItem={updateItem}
                 />
                 <Column
-                    //tasksList={cancelledTasks}
+                    userId={userId}
+                    departmentId = {departmentId}
                     colTitle={'Cancelled'}
                     color={'#ce0019'}
                     taskChanged={taskChanged}
                     updateItem={updateItem}
                 />
                 <Column
-                    //tasksList={blockedTasks}
+                    userId={userId}
+                    departmentId = {departmentId}
                     colTitle={'Blocked'}
                     color={'#ff6602'}
                     taskChanged={taskChanged}

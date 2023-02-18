@@ -4,14 +4,14 @@ import axios from "../../../Api/axios"
 import useAuth from '../../../hooks/useAuth';
 import jwt_decode from "jwt-decode";
 
-export default function Column({colTitle, color, updateItem, taskChanged}) {
+export default function Column({colTitle, color, updateItem, taskChanged, departmentId, userId}) {
     const [tasks, setTasks] = useState([]);
     const { auth } = useAuth();
     const status = colTitle.replace(/\s+/g, '')
     const [updateColumn, setUpdateColumn] = useState(false)
-    let userId
-    auth ? userId = jwt_decode(auth.accessToken).UserId : userId = null
-
+    //let userId
+    //auth ? userId = jwt_decode(auth.accessToken).UserId : userId = null
+    
     useEffect(() => {
         let isMountet = true
         const controller = new AbortController();
@@ -26,7 +26,7 @@ export default function Column({colTitle, color, updateItem, taskChanged}) {
                         'Authorization': `Bearer ${auth.accessToken}`
                     }
                 })
-                console.log(response?.data)
+                //console.log(response?.data)
                 isMountet && setTasks(response?.data)
                 updateItem(false)
                 setUpdateColumn(false)
@@ -34,7 +34,27 @@ export default function Column({colTitle, color, updateItem, taskChanged}) {
                 console.log(err)
             }
         }
-        getTaskFromUser();
+
+        const getTaskFromDepartment = async () => {
+            try {
+                const response = await axios.get(`/api/Kanban/departmentId?departmentId=${departmentId}&status=${status}`, {
+                    signal: controller.signal,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Origin': 'https://localhost:3000',
+                        'Authorization': `Bearer ${auth.accessToken}`
+                    }
+                })
+                //console.log(response?.data)
+                isMountet && setTasks(response?.data)
+                updateItem(false)
+                setUpdateColumn(false)
+            } catch (err) {
+                console.log(err)
+            }
+        }
+        //console.log("departmentId: "+ departmentId)
+        departmentId === null ? getTaskFromUser() : getTaskFromDepartment();
         return () => {
             isMountet = false
             controller.abort()
