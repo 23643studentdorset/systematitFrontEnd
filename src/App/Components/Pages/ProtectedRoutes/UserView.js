@@ -6,6 +6,8 @@ import axios from "../../../../Api/axios"
 import useAuth from "../../../../hooks/useAuth"
 import { RadioGroup, Radio } from "@mui/material"
 import React from "react"
+import Chat from "../../Chat"
+
 export default function UserView() {
 
     const [departments, setDepartments] = useState([])
@@ -130,7 +132,7 @@ export default function UserView() {
 
             {selectedValue === "byUser" && showBoard && userId !== 0 ?
                 <Kanban
-                    KanbanTitle="User"
+                    KanbanTitle={user}
                     departmentId={null}
                     userId={userId}
                 /> : null}
@@ -141,7 +143,7 @@ export default function UserView() {
                     userId={null}
                 /> : null}
 
-
+            <Chat />
         </>
     )
 }

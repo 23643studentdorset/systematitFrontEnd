@@ -26,7 +26,7 @@ const Chat = () => {
                     }
                 })
                 isMountet && setUsers(response?.data)
-                console.log("auth: "+ auth.)
+                console.log("auth: "+ auth)
             } catch (err) {
                 console.log(err)
             }
