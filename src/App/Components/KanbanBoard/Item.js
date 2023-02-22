@@ -36,7 +36,7 @@ function Item({ task, color, renderColumn }) {
                         <Box sx={{display:"flex"}}>
                             <Tooltip title={`Assigne ${task.assignee.firstName} ${task.assignee.lastName}`}>
                                 <Box sx={{borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', 
-                                border: 0.1, marginRight: 1, backgroundColor: "#ffffee", width:"3em", height:"3em" }}>
+                                border: 1, marginRight: 1, backgroundColor: "#ffffee", width:"3em", height:"3em" }}>
                                     <Typography variant="body2">
                                         {task.assignee.firstName[0]}{task.assignee.lastName[0]}
                                     </Typography>
@@ -82,7 +82,9 @@ const formatDate = (date) => {
     let newDate = new Date(date);
     let day = newDate.getDate();
     let month = newDate.getMonth();
-    return `${day < 10 ? `0${day}` : day}-${month < 10 ? `0${month}` : month}-${newDate.getFullYear()}`;
+    let hour = newDate.getHours();
+    let minutes = newDate.getMinutes();
+    return `${day < 10 ? `0${day}` : day}-${month < 10 ? `0${month}` : month}-${newDate.getFullYear()} ${hour < 10 ? `0${hour}` : hour}:${minutes < 10 ? `0${minutes}` : minutes}`;
 }
 
 

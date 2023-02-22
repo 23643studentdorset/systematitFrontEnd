@@ -20,9 +20,9 @@ export default function UserView() {
     const { auth } = useAuth()
 
     useEffect(() => {
+        let isMountet = true
+        const controller = new AbortController();
         const getDepartments = async () => {
-            let isMountet = true
-            const controller = new AbortController();
             try {
                 const response = await axios.get(`/api/Department`, {
                     signal: controller.signal,
@@ -39,8 +39,6 @@ export default function UserView() {
             }
         }
         const getUsers = async () => {
-            let isMountet = true
-            const controller = new AbortController();
             try {
                 const response = await axios.get(`/api/User`, {
                     signal: controller.signal,
@@ -58,6 +56,10 @@ export default function UserView() {
         }
         getDepartments()
         getUsers()
+        return () => {
+            isMountet = false
+            controller.abort()
+        }
     }, [])
 
     const getKanbanByDepartment = (value) => {
