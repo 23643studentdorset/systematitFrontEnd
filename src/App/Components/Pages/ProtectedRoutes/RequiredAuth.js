@@ -7,12 +7,17 @@ const RequiredAuth = ({allowedRoles}) => {
     const location = useLocation();
 
     const decoded = jwt_decode(auth.accessToken)                
-    const roles = decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]
-
-    
+    const roles = []
+    roles.push(decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"])
+    /*
+    console.log("Roles:" + roles)
+    console.log("allowedRoles:" + allowedRoles)
+    const checkRoles = roles?.find(role => role === allowedRoles)
+    console.log("checkRoles:" + checkRoles)
+    */
     return (
         //&& roles?.find(role => allowedRoles?.includes(role))
-        auth?.accessToken 
+        auth?.accessToken
         ? <Outlet/> 
         : <Navigate to ="/login" state={{from: location}} replace/>
     )

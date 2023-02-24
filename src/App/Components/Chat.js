@@ -14,7 +14,6 @@ const Chat = () => {
     const [currentUser, setCurrentUser] = useState({})
     const [message, setMessage] = useState("")
     const [messagesChanged, setMessagesChanged] = useState(false)
-    const [displayRight, setDisplayRight] = useState(false)
     const listRef = useRef();
     let currentUserId = jwt_decode(auth.accessToken).UserId
 
@@ -102,6 +101,7 @@ const Chat = () => {
                         'Authorization': `Bearer ${auth.accessToken}`
                     }
                 });
+            //console.log(response?)
             setMessage("")
             setMessagesChanged(!messagesChanged)
         } catch (error) {
@@ -110,7 +110,7 @@ const Chat = () => {
     }
 
     return (
-        <Box sx={{ width: "80%" }}>
+        <Box sx={{ width: "45em" }}>
             <Grid container>
                 <Grid item xs={12} >
                     <Typography variant="h5">Chat</Typography>
@@ -169,7 +169,7 @@ const Chat = () => {
                                                 `${currentUser.firstName} ${currentUser.lastName}` :
                                                 `${message.sender.firstName} ${message.sender.lastName}`} />
 
-                                        <ListItemText sx={{ backgroundColor: currentUserId == message.sender.userId ? "#e3fdff" : "#eeeefe", border: 1, padding: "0.3em", borderRadius: '0.7em', maxWidth: "20em" }}
+                                        <ListItemText sx={{ backgroundColor: currentUserId == message.sender.userId ? "#eef7fe" : "#eeeefe", border: 1, padding: "0.3em", borderRadius: '0.7em', maxWidth: "20em"}}
                                             primary={`${message.content}`} align="left"
                                             style={currentUserId == message.sender.userId ? { 'borderBottomRightRadius': "0%" } : { 'borderBottomLeftRadius': "0%" }} />
                                         <ListItemText secondary={`${formatDate(message.time)}`} />
@@ -190,7 +190,7 @@ const Chat = () => {
                                 onChange={(e) => setMessage(e.target.value)}
                                 value={message} />
                         </Grid>
-                        <Grid xs={1} align="right">
+                        <Grid item xs={1} align="right">
                             <Fab color="primary" aria-label="add" onClick={handleSendMessage}><SendIcon /></Fab>
                         </Grid>
                     </Grid>

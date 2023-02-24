@@ -14,7 +14,7 @@ const Login = () => {
   const location = useLocation();
   const from = location.state?.from?.pathname || "/UserView";
 
-  const emailRef = useRef();
+
   const errorRef = useRef();
 
   const [email, setEmail] = useState("");

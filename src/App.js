@@ -48,13 +48,13 @@ function App() {
               <Route exact path="register" element={<Register />} />              
               <Route path="*" element={<NotFound />}/>
                             
-              <Route element={<RequiredAuth allowedRoles = {["Admin", "Manager", "Regular"]}/>}>
+              <Route element={<RequiredAuth allowedRoles = {"Admin"}/>}>
                   <Route exact path="AdminView" element={<AdminView />} />
               </Route>
-              <Route element={<RequiredAuth allowedRoles = {["Manager", "Regular"]}/>}>
+              <Route element={<RequiredAuth allowedRoles = {"Manager"}/>}>
                 <Route exact path="ManagerView" element={<ManagerView />} />
               </Route>
-              <Route element={<RequiredAuth allowedRoles = {["Regular"]}/>}>
+              <Route element={<RequiredAuth allowedRoles = {"Regular"}/>}>
                 <Route exact path="userView" element={<UserView />} />
               </Route>
 

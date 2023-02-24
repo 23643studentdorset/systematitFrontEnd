@@ -1,11 +1,9 @@
 import React, { useState} from 'react';
-import useAuth from '../../hooks/useAuth';
-import jwt_decode from "jwt-decode";
-import Column from './KanbanBoard/Column';
+import Column from './Column';
 import ControlPointIcon from '@mui/icons-material/ControlPoint';
 import { Box, Button } from '@mui/material';
 import { Tooltip } from '@mui/material';
-import AddItemModal from './KanbanBoard/AddItemModal';
+import AddItemModal from './AddItemModal';
 
 
 export default function Kanban({KanbanTitle, departmentId, userId}) {
