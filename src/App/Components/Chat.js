@@ -110,7 +110,7 @@ const Chat = () => {
     }
 
     return (
-        <Box sx={{ width: "45em" }}>
+        <Paper sx={{ width: "45rem" }}>
             <Grid container>
                 <Grid item xs={12} >
                     <Typography variant="h5">Chat</Typography>
@@ -128,11 +128,11 @@ const Chat = () => {
                     </List>
                     <Divider />
 
-                    <Grid style={{ padding: '10px' }}>
+                    <Grid style={{ padding: '2rem' }}>
                         <Autocomplete
                             key={restOfUsers.userId}
                             defaultValue={""}
-                            sx={{ width: "100%", marginRight: "2em" }}
+                            sx={{ width: "100%", marginRight: "2rem" }}
                             id="users"
                             options={restOfUsers.map((option) => `${option.firstName} ${option.lastName}`)}
                             renderInput={(params) => <TextField {...params} label="Type an user" variant="standard" onChange={getUserIdAutocomplete} />}
@@ -144,12 +144,12 @@ const Chat = () => {
                     <Grid>
 
                     <List sx={{ overflow: 'auto', maxHeight: 200 }}>
-                        {restOfUsers.map((user) => (
+                        {restOfUsers.map(( user) => (
                             <ListItemButton key={user.userId} onClick={() =>
                                 setUserId(user.userId)}>
                                 <ListItem >
                                     <ListItemIcon>
-                                        <Avatar src="https://material-ui.com/static/images/avatar/1.jpg" />
+                                        <Avatar src={`https://material-ui.com/static/images/avatar/${user.userId}.jpg`} />
                                     </ListItemIcon>
                                     <ListItemText primary={`${user.firstName} ${user.lastName}`}></ListItemText>
                                 </ListItem>
@@ -180,12 +180,11 @@ const Chat = () => {
                         ))}
                     </List>
                     <Divider />
-                    <Grid container style={{ padding: '20px' }}>
+                    <Grid container style={{ padding: '1rem' }}>
                         <Grid item xs={11}>
                             <TextField
                                 id="TypeSomething"
-                                label="Type Something"
-                                
+                                label="Type Something"                               
                                 fullWidth
                                 onChange={(e) => setMessage(e.target.value)}
                                 value={message} />
@@ -196,7 +195,7 @@ const Chat = () => {
                     </Grid>
                 </Grid>
             </Grid>
-        </Box >
+        </Paper >
     );
 }
 

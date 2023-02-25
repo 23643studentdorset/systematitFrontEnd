@@ -1,6 +1,6 @@
 import React from 'react';
 import { useRef, useState, useEffect } from 'react';
-import { Box, Typography, Button, TextField } from '@mui/material';
+import { Box, Typography, Button, TextField, Snackbar, Alert } from '@mui/material';
 import axios from '../../../Api/axios';
 import useAuth from '../../../hooks/useAuth';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
@@ -20,10 +20,23 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errMsg, setErrMsg] = useState("");
+  const [openError, setOpenError] = React.useState(false);
 
   useEffect(() => {
     setErrMsg("");
   }, [email, password])
+
+  const handleClick = (option) => {
+    if (option === "error")
+      setOpenError(true);
+  };
+
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpenError(false);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -43,6 +56,7 @@ const Login = () => {
       navigate(from, { replace: true });
     }
     catch (err) {
+      handleClick("error");
       if (!err?.response) {
         setErrMsg("No server response");
       } else if (err.response?.status === 400) {
@@ -52,7 +66,7 @@ const Login = () => {
       } else {
         setErrMsg("Unknown error");
       }
-      errorRef.current.focus();
+      //errorRef.current.focus();
     }
   }
 
@@ -60,8 +74,11 @@ const Login = () => {
 
   return (
     <Box m={10} sx={{ width: 500, backgroundColor: 'textDark', alignItems: "center" }}>
-      <Typography sx={{ color: "errorBackground", textAlign: "center" }} variant="h5"><p ref={errorRef} className={errMsg ? "errMsg" :
-        "offscreen"} aria-live="assertive">{errMsg}</p></Typography>
+            <Snackbar anchorOrigin={{ vertical: 'top', horizontal: 'center' }} open={openError} autoHideDuration={6000} onClose={handleClose}>
+                <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
+                    {errMsg}
+                </Alert>
+            </Snackbar>
       <section>
         <Typography sx={{ textAlign: "center" }} variant="h5">Sign in</Typography>
         <form>
@@ -75,27 +92,7 @@ const Login = () => {
             onChange={(e) => setEmail(e.target.value)}
             inputProps={{ style: { color: "textLight" } }}
           ></TextField>
-          {/*
-          <label htmlFor="email">Email:</label>
-          <input
-            type="text"
-            id="email"
-            ref={emailRef}
-            autoComplete="on"
-            onChange={(e) => setEmail(e.target.value)}
-            value={email}
-            required                      
-          />
- 
-          <label htmlFor="password">Password:</label>
-          <input
-            type="password"
-            id="password"
-            onChange={(e) => setPassword(e.target.value)}
-            value={password}
-            required
-          />
- */}
+          
           <TextField
             sx={{ width: "66%" }}
             id="password"

@@ -19,7 +19,7 @@ export default function NavBarLogedIn() {
         <Button color="textLight"><CustomLink to="/UserView">Dashboard</CustomLink></Button>
       </Box>
       <Box spacing={2} sx={{ display: 'flex', alignItems: 'center' }}>
-        <Button sx={{ marginRight: 1 }} onClick={logout} variant="outlined" color="textLight" size="medium"><CustomLink to="/">Logout</CustomLink></Button>
+        <Button sx={{ marginRight: 1 }} onClick={logout} variant="outlined" color="textLight" size="medium"><CustomLink to="">Logout</CustomLink></Button>
       </Box>
 
     </nav>
