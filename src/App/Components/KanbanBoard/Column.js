@@ -12,6 +12,7 @@ export default function Column({colTitle, color, updateItem, taskChanged, depart
     //let userId
     //auth ? userId = jwt_decode(auth.accessToken).UserId : userId = null
     
+
     useEffect(() => {
         let isMountet = true
         const controller = new AbortController();
@@ -28,6 +29,7 @@ export default function Column({colTitle, color, updateItem, taskChanged, depart
                 })
                 //console.log(response?.data)
                 isMountet && setTasks(response?.data)
+                console.log(response?.data)
                 updateItem(false)
                 setUpdateColumn(false)
             } catch (err) {
@@ -45,7 +47,7 @@ export default function Column({colTitle, color, updateItem, taskChanged, depart
                         'Authorization': `Bearer ${auth.accessToken}`
                     }
                 })
-                //console.log(response?.data)
+                console.log(response?.data)
                 isMountet && setTasks(response?.data)
                 updateItem(false)
                 setUpdateColumn(false)
@@ -80,18 +82,20 @@ export default function Column({colTitle, color, updateItem, taskChanged, depart
                     {colTitle}
                 </h3>
             </header>
+                
             <div>
                 {
                     tasks.map((i, index) => (
                         <Item
-                            key={index}
-                            task={i}
-                            color={color}
-                            renderColumn={renderColumn}                      
+                        key={index}
+                        task={i}
+                        color={color}
+                        renderColumn={renderColumn}                      
                         />
                     ))
-                }
+                    }
             </div>
+                    
         </div>
     )
 }

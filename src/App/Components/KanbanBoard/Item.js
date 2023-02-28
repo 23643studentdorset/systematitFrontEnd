@@ -20,8 +20,9 @@ function Item({ task, color, renderColumn }) {
     const openTaskDetails = () => {
         //console.log(`Open task: ${task.kanbanTaskId}`);
         openUpdateModal();
-        
+
     }
+
 
     return (
         <>
@@ -31,34 +32,51 @@ function Item({ task, color, renderColumn }) {
                         <Tooltip title={"Taks name"}>
                             <Typography gutterBottom variant="h6" component="div" color={"textDark"}>
                                 {task.title}
-                            </Typography>   
+                            </Typography>
                         </Tooltip>
-                        <Box sx={{display:"flex"}}>
-                            <Tooltip title={`Assigne ${task.assignee.firstName} ${task.assignee.lastName}`}>
-                                <Box sx={{borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', 
-                                border: 1, marginRight: 1, backgroundColor: "#ffffee", width:"3em", height:"3em" }}>
+
+                        <Box sx={{ display: "flex" }}>
+                            <Tooltip title={`Assigne ${task.assigneeUserFirstName} ${task.assigneeUserLastName}`}>
+                                <Box sx={{
+                                    borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                    border: 1, marginRight: 1, backgroundColor: "#ffffee", width: "3em", height: "3em"
+                                }}>
                                     <Typography variant="body2">
-                                        {task.assignee.firstName[0]}{task.assignee.lastName[0]}
+
+                                        {task.assigneeUserFirstName[0]}{task.assigneeUserLastName[0]}
                                     </Typography>
                                 </Box>
                             </Tooltip>
-                            <Tooltip title={`Reporter ${task.reporter.firstName} ${task.reporter.lastName}`}>
-                                <Box sx={{borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', 
-                                border: 0.1, marginRight: 1, backgroundColor: "#eeeeff", width:"3em", height:"3em"  }}>
+                            <Tooltip title={`Reporter ${task.reporterUserFirstName} ${task.reporterUserLastName}`}>
+                                <Box sx={{
+                                    borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                    border: 0.1, marginRight: 1, backgroundColor: "#eeeeff", width: "3em", height: "3em"
+                                }}>
                                     <Typography variant="body2">
-                                        {task.reporter.firstName[0]}{task.reporter.lastName[0]}
+                                        {task.reporterUserFirstName[0]}{task.reporterUserLastName[0]}
                                     </Typography>
                                 </Box>
                             </Tooltip>
                         </Box>
 
-                        <Tooltip title={`Task created on`}>
-                            <Box sx={{ color: "#888888", marginTop: 1 }}>
-                                <Typography variant="body2" color="textDark">
-                                    {formatDate(task.createdOn)}
-                                </Typography>
-                            </Box>
-                        </Tooltip>
+                        {
+                            task.lastModifiedOn === null ?
+                                <Tooltip title={`Task created on`}>
+                                    <Box sx={{ color: "#888888", marginTop: 1 }}>
+                                        <Typography variant="body2" color="textDark">
+                                            {formatDate(task.createdOn)}
+                                        </Typography>
+                                    </Box>
+                                </Tooltip> :
+                                <Tooltip title={`Task last modified on`}>
+                                    <Box sx={{ color: "#888888", marginTop: 1 }}>
+                                        <Typography variant="body2" color="textDark">
+                                            {formatDate(task.lastModifiedOn)}
+                                        </Typography>
+                                    </Box>
+                                </Tooltip>
+                        }
+
                     </Box>
                 </CardActionArea>
             </Card>
@@ -71,7 +89,7 @@ function Item({ task, color, renderColumn }) {
                         <UpdateModal
                             setShowUpdateModal={setShowUpdateModal}
                             renderColumn={renderColumn}
-                            task={task}
+                            taskId={task.kanbanTaskId}
                         ></UpdateModal></Modal>)}
             </div>
         </>

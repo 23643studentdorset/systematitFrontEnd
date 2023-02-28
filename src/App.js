@@ -1,5 +1,3 @@
-import NavBarNotLogedIn from './App/Components/NavBars/NavBarNotLogedIn';
-import NavBarLogedIn from './App/Components/NavBars/NavBarLogedIn';
 import NavBar from './App/Components/NavBars/NavBar';
 import About from './App/Components/Pages/About';
 import Contact from './App/Components/Pages/Contact';
@@ -10,7 +8,7 @@ import AdminView from './App/Components/Pages/ProtectedRoutes/AdminView';
 import ManagerView from './App/Components/Pages/ProtectedRoutes/ManagerView';
 import NotFound from './App/errors/NotFound';
 import Login from './App/Components/Login/Login';
-import Register from './App/Components/Register/Register'
+import Register from './App/Components/RegisterUser/Register'
 import Services from './App/Components/Pages/Services';
 import Layout from './App/Components/Pages/Layout';
 import RequiredAuth from './App/Components/Pages/ProtectedRoutes/RequiredAuth';
@@ -46,8 +44,7 @@ function App() {
               <Route exact path="services" element={<Services />} />
               <Route exact path="login" element={<Login />} />
               <Route exact path="register" element={<Register />} />              
-              <Route path="*" element={<NotFound />}/>
-                            
+              <Route path="*" element={<NotFound />}/>              
               <Route element={<RequiredAuth allowedRoles = {"Admin"}/>}>
                   <Route exact path="AdminView" element={<AdminView />} />
               </Route>
@@ -57,11 +54,9 @@ function App() {
               <Route element={<RequiredAuth allowedRoles = {"Regular"}/>}>
                 <Route exact path="userView" element={<UserView />} />
               </Route>
-
             </Route>
-            
-          </Routes>
-        </div>       
+          </Routes>     
+        </div>
       </ThemeProvider>    
   )  
 }

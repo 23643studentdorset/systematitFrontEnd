@@ -1,28 +1,30 @@
-import { Box, Typography, Button, Autocomplete, Stack, List, ListItem, ListItemText, Tooltip, IconButton, Divider } from '@mui/material'
-import { useEffect, useState } from 'react';
+import { Box, Button, Stack, Typography, TextField, Autocomplete, List, Divider, ListItem, Tooltip, ListItemText } from '@mui/material'
+import axios from '../../../Api/axios'
 import useAuth from '../../../hooks/useAuth'
-import axios from "../../../Api/axios"
-import TextField from '@mui/material/TextField';
-import React from 'react';
+import { useEffect, useState } from 'react'
 
+function UpdateModal({ taskId, setShowUpdateModal, renderColumn }) {
+    const { auth } = useAuth()
+    const [users, setUsers] = useState([])
+    const [departments, setDepartments] = useState([])
+    const [stores, setStores] = useState([])
 
-function UpdateModal({ task, setShowUpdateModal, renderColumn }) {
-
-    const [taskTitle, setTaskTitle] = useState(task.title);
-    const [taskStatus, setTaskStatus] = useState(task.taskStatus.name);
-    const [taskDepartment, setTaskDepartment] = useState(task.department);
-    const [taskStore, setTaskStore] = useState(task.store);
-    const [taskAssignee, setTaskAssignee] = useState(task.assignee);
-    const [taskDescription, setTaskDescription] = useState(task.description);
-
-    const [users, setUsers] = useState([]);
-    const [departments, setDepartments] = useState([]);
-    const [stores, setStores] = useState([]);
-    const taskStatuses = [{ name: "To Do", statusId: 1 }, { name: "In Progress", statusId: 2 },
-    { name: "Done", statusId: 3 }, { name: "Cancelled", statusId: 4 }, { name: "Blocked", statusId: 5 }]
+    const [taskTitle, setTaskTitle] = useState("");
+    const [taskStatus, setTaskStatus] = useState("");
+    const [taskDepartment, setTaskDepartment] = useState("");
+    const [taskAssignee, setTaskAssignee] = useState("");
+    const [taskStore, setTaskStore] = useState("");
+    const [taskDescription, setTaskDescription] = useState("");
     const [taskComment, setTaskComment] = useState("");
-    const [comments, setComments] = useState(task.comments);
-    const { auth } = useAuth();
+    const [comments, setComments] = useState([]);
+    const [oldTaskStatus, setOldTaskStatus] = useState("");
+
+    const taskStatuses = [
+        { name: "To Do", statusId: 1 },
+        { name: "In Progress", statusId: 2 },
+        { name: "Done", statusId: 3 },
+        { name: "Cancelled", statusId: 4 },
+        { name: "Blocked", statusId: 5 }]
 
     useEffect(() => {
         let isMountet = true
@@ -38,7 +40,6 @@ function UpdateModal({ task, setShowUpdateModal, renderColumn }) {
                     }
                 })
                 isMountet && setUsers(response?.data)
-                //console.log(response?.data)                
             } catch (err) {
                 console.log(err)
             }
@@ -54,7 +55,6 @@ function UpdateModal({ task, setShowUpdateModal, renderColumn }) {
                     }
                 })
                 isMountet && setDepartments(response?.data)
-                //console.log(response?.data)
             } catch (err) {
                 console.log(err)
             }
@@ -70,7 +70,34 @@ function UpdateModal({ task, setShowUpdateModal, renderColumn }) {
                     }
                 })
                 isMountet && setStores(response?.data)
-                //console.log(response?.data)
+            } catch (err) {
+                console.log(err)
+            }
+        }
+
+        const getTask = async () => {
+            try {
+                const response = await axios.get(`/api/Kanban/taskDetailId?taskId=${taskId}`, {
+                    signal: controller.signal,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Origin': 'https://localhost:3000',
+                        'Authorization': `Bearer ${auth.accessToken}`
+                    }
+                })
+                //isMountet && setTask(response?.data)
+                isMountet && setTaskTitle(response?.data.title)
+                console.log(response?.data)
+                response?.data.taskStatus.name === "ToDo" ? isMountet && setTaskStatus("To Do") :
+                    response?.data.taskStatus.name === "InProgress" ? isMountet && setTaskStatus("In Progress") :
+                        isMountet && setTaskStatus(response?.data.taskStatus.name)
+                setTaskDepartment(response?.data.department.name)
+                setTaskAssignee(`${response?.data.assignee.firstName} ${response?.data.assignee.lastName}`)
+                setTaskStore(response?.data.store !== null ? response?.data.store.name : "")
+                setTaskDescription(response?.data.description)
+                setComments(response?.data.comments)
+                setOldTaskStatus(response?.data.taskStatus.name)
+
             } catch (err) {
                 console.log(err)
             }
@@ -78,11 +105,12 @@ function UpdateModal({ task, setShowUpdateModal, renderColumn }) {
         getUsers();
         getDepartments();
         getStores();
-        getComments();
+        getTask();
         return () => {
             isMountet = false
             controller.abort()
         }
+
     }, [])
 
     const sendComment = async () => {
@@ -90,7 +118,7 @@ function UpdateModal({ task, setShowUpdateModal, renderColumn }) {
         try {
             const response = await axios.post("/api/Kanban/CreateComment", JSON.stringify({
                 comment: taskComment,
-                taskId: task.kanbanTaskId
+                taskId: taskId
             }),
                 {
                     headers: {
@@ -107,7 +135,7 @@ function UpdateModal({ task, setShowUpdateModal, renderColumn }) {
 
     const getComments = async () => {
         try {
-            const response = await axios.get(`/api/Kanban/GetAllCommentsByTaskId?taskId=${task.kanbanTaskId}`,
+            const response = await axios.get(`/api/Kanban/GetAllCommentsByTaskId?taskId=${taskId}`,
                 {
                     headers: {
                         'Content-Type': 'application/json',
@@ -121,29 +149,15 @@ function UpdateModal({ task, setShowUpdateModal, renderColumn }) {
             console.log(error)
         }
     }
-
-    const handleSubmit = () => {
-        //console.log(taskStore)
-        if (taskTitle.length > 0 && taskStatus.length > 0
-            && taskDepartment.length > 0 && taskAssignee.length > 0
-            && taskDescription.length > 0) {
-            updateTask()
-            console.log("task.status: " + task.taskStatus.name)
-            const status = task.taskStatus.name.replace(/\s+/g, '')
-            renderColumn(taskStatus, status)
-            setShowUpdateModal(false)
-        }
-
-    }
-
+    
     const updateTask = async () => {
-        const assigneeId = users.find((user) => user.email === taskAssignee.split(" - ")[1]).userId
+        const assigneeId = users.find((user) => `${user.firstName} ${user.lastName}` === taskAssignee).userId
         const departmentId = departments.find((department) => department.name === taskDepartment).departmentId
-        const storeId = stores.length > 0 && taskStore !== "N/A" && taskStore !== "" ? stores.find((store) => store.name === taskStore).storeId : 0
+        const storeId = stores.length > 0 && taskStore !== "" ? stores.find((store) => store.name === taskStore).storeId : 0
         const statusId = taskStatuses.find((status) => status.name === taskStatus).statusId
         try {
             const response = await axios.put("/api/Kanban", JSON.stringify({
-                kanbanTaskId: task.kanbanTaskId,
+                kanbanTaskId: taskId,
                 title: taskTitle,
                 statusId: statusId,
                 departmentId: departmentId,
@@ -163,19 +177,36 @@ function UpdateModal({ task, setShowUpdateModal, renderColumn }) {
         }
     }
 
+    const handleSubmit = () => {
+        if (taskTitle.length > 0 && taskStatus.length > 0
+            && taskDepartment.length > 0 && taskAssignee.length > 0
+            && taskDescription.length > 0) {
+            console.log("oldTaskStatus: " + oldTaskStatus)
+            console.log("taskStatus: " + taskStatus)
+            updateTask()           
+            renderColumn(taskStatus.replace(/\s+/g, ''), oldTaskStatus)
+            setShowUpdateModal(false)
+        }
+
+    }
+
+
     return (
         <Box component="form" noValidate >
             <div className='modal'>
                 <div className='modalWrapper'>
-
-                    <Typography variant='h5'>Update task: {task.title}</Typography>
+                    <Typography variant='h5'>Update task: { }</Typography>
                     <Box sx={{ display: "flex", marginTop: "1em" }}>
-                        <TextField sx={{ width: "40%", marginRight: "1em" }} label="Title" defaultValue={`${task.title}`} variant="standard" onChange={(e) => setTaskTitle(e.target.value)} />
-
+                        <TextField
+                            sx={{ width: "40%", marginRight: "1em" }}
+                            label="Title"
+                            value={`${taskTitle}`}
+                            variant="standard"
+                            onChange={(e) => setTaskTitle(e.target.value)} />
                         <Autocomplete
                             sx={{ width: "40%" }}
                             id="Status"
-                            defaultValue={taskStatuses[task.taskStatus.statusId - 1].name}
+                            value={taskStatus}
                             options={taskStatuses.map((option) => `${option.name}`)}
                             renderInput={(params) => <TextField {...params} label="Status" variant="standard" onChange={(e) => setTaskStatus(e.target.value)} />}
                             //Sets the value of the input when you chose it from the list
@@ -183,15 +214,13 @@ function UpdateModal({ task, setShowUpdateModal, renderColumn }) {
                                 setTaskStatus(newInputValue);
                             }}
                         />
-
                     </Box>
                     <Box sx={{ display: "flex", marginTop: "1em" }}>
-
                         <Autocomplete
                             sx={{ width: "40%", marginRight: "1em" }}
                             id="department"
                             options={departments.map((option) => `${option.name}`)}
-                            defaultValue={task.department.name}
+                            value={taskDepartment}
                             renderInput={(params) => <TextField {...params} label="Department" variant="standard" />}
                             onInputChange={(_, newValue) => {
                                 setTaskDepartment(newValue)
@@ -200,8 +229,8 @@ function UpdateModal({ task, setShowUpdateModal, renderColumn }) {
                         <Autocomplete
                             sx={{ width: "40%" }}
                             id="assinnee"
-                            defaultValue={`${task.assignee.firstName} ${task.assignee.lastName} - ${task.assignee.email}`}
-                            options={users.map((option) => `${option.firstName} ${option.lastName} - ${option.email}`)}
+                            value={taskAssignee}
+                            options={users.map((option) => `${option.firstName} ${option.lastName}`)}
                             renderInput={(params) => <TextField {...params} label="Assinnee" variant="standard" onChange={(e) => setTaskAssignee(e.target.value)} />}
                             //Sets the value of the input when you chose it from the list
                             onInputChange={(_, newInputValue) => {
@@ -209,23 +238,27 @@ function UpdateModal({ task, setShowUpdateModal, renderColumn }) {
                             }}
                         />
                     </Box>
-                    <Box sx={{ display: "flex", marginTop: "1em" }}>
-                        <TextField sx={{ width: "40%", marginRight: "1em" }} id="standard-basic" defaultValue={`${task.description}`} label="Description" variant="standard" onChange={(e) => setTaskDescription(e.target.value)} />
 
-                        {stores.length > 0 ?
-                            <Autocomplete
-                                sx={{ width: "40%" }}
-                                id="store"
-                                options={stores.map((option) => `${option.name}`)}
-                                defaultValue={task.store !== null ? `${task.store.name}` : `N/A`}
-                                renderInput={(params) => <TextField {...params} label="Store" variant="standard" />}
-                                onInputChange={(_, newValue) => {
-                                    setTaskStore(newValue)
-                                }}
-                            />
-                            : null
-                        }
-                    </Box>
+                    {stores.length > 0 ?
+                        <Autocomplete
+                            sx={{ width: "40%" }}
+                            id="store"
+                            options={stores.map((option) => `${option.name}`)}
+                            value={taskStore !== "" ? `${taskStore}` : null}
+                            renderInput={(params) => <TextField {...params} label="Store" variant="standard" />}
+                            onInputChange={(_, newValue) => {
+                                setTaskStore(newValue)
+                            }}
+                        />
+                        : null
+                    }
+                    <TextField
+                        sx={{ width: "80%", marginTop: "1em" }}
+                        id="standard-basic"
+                        value={`${taskDescription}`}
+                        label="Description"
+                        variant="standard"
+                        onChange={(e) => setTaskDescription(e.target.value)} />
 
                     {comments.length > 0 ? <List sx={{ marginTop: "1em", width: '80%', borderRadius: '10px', border: 0.1, borderColor: "#777777" }}
                         style={{ maxHeight: 200, overflow: 'auto' }}>
@@ -255,10 +288,18 @@ function UpdateModal({ task, setShowUpdateModal, renderColumn }) {
                             ))
                         }
                     </List> : null}
-
                     <Box sx={{ borderRadius: '10px', border: 0.1, borderColor: "#777777", width: "80%", p: 1, marginTop: "1em", display: "flex" }}>
-                        <TextField sx={{ width: "90%" }} id="standard-basic" label="Add comment" variant="standard" onChange={(e) => setTaskComment(e.target.value)} />
-                        <Button variant='outlined' sx={{ marginTop: "0.2em", ml: '10em' }} onClick={sendComment}>Send</Button>
+                        <TextField 
+                        sx={{ width: "90%" }} 
+                        id="standard-basic" 
+                        label="Add comment"
+                        value={taskComment} 
+                        variant="standard" 
+                        onChange={(e) => setTaskComment(e.target.value)} />
+                        <Button 
+                        variant='outlined' 
+                        sx={{ marginTop: "0.2em", ml: '10em' }} 
+                        onClick={sendComment}>Send</Button>
                     </Box>
 
                     <Box sx={{ marginTop: "1em", display: "flex" }}>
@@ -267,12 +308,9 @@ function UpdateModal({ task, setShowUpdateModal, renderColumn }) {
                             <Button variant="outlined" onClick={() => setShowUpdateModal(false)} color="error">Cancel</Button>
                         </Stack>
                     </Box>
-
                 </div>
             </div>
-        </Box >
-
+        </Box>
     )
 }
-
-export default UpdateModal;
+export default UpdateModal
