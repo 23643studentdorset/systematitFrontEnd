@@ -14,6 +14,7 @@ const UpdateStore = () => {
     const [stores, setStores] = useState([])
     const [storeId, setStoreId] = useState("")
     const [storesChanged, setStoresChanged] = useState(false)
+    const [showFields, setShowFields] = useState(false)
 
     const handleClick = (option) => {
         if (option === "success")
@@ -95,17 +96,21 @@ const UpdateStore = () => {
                     }
                 });
             //console.log(response?.status)
-            if (response?.status === 200)
-            {
+            if (response?.status === 200) {
                 setStoresChanged(!storesChanged)
                 handleClick("success")
             }
-                
+
 
         } catch (error) {
             handleClick("error")
             console.log(error)
         }
+    }
+
+    const handleSearch = () => {
+        getStore()
+        setShowFields(true)
     }
 
     return (
@@ -134,28 +139,32 @@ const UpdateStore = () => {
                                 //console.log("newValue: "+ newValue)
                                 setNewStoreName("")
                                 setStoreDescription("")
+                                setShowFields(false)
                                 setStoreName(newValue)
                             }}
                         />
                         : null
                     }
-                    <Button variant="outlined" onClick={getStore}>Search</Button>
+                    <Button variant="outlined" onClick={handleSearch}>Search</Button>
                 </Box>
-                <TextField
-                    sx={{ marginTop: "1rem", width: "60%" }}
-                    id="Store name"
-                    label="Store name"
-                    variant="standard"
-                    onChange={(e) => setNewStoreName(e.target.value)}
-                    value={newStoreName} />
-                <TextField
-                    sx={{ marginTop: "1rem", width: "60%" }}
-                    id="Store description"
-                    label="Store description"
-                    variant="standard"
-                    onChange={(e) => setStoreDescription(e.target.value)}
-                    value={storeDescription} />
-
+                {showFields ?
+                    <>
+                        <TextField
+                            sx={{ marginTop: "1rem", width: "60%" }}
+                            id="Store name"
+                            label="Store name"
+                            variant="standard"
+                            onChange={(e) => setNewStoreName(e.target.value)}
+                            value={newStoreName} />
+                        <TextField
+                            sx={{ marginTop: "1rem", width: "60%" }}
+                            id="Store description"
+                            label="Store description"
+                            variant="standard"
+                            onChange={(e) => setStoreDescription(e.target.value)}
+                            value={storeDescription} />
+                    </>
+                    : null}
                 <Box marginTop={2} sx={{ alignItems: 'center', textAlign: "center" }}>
                     <Button
                         size="medium"
