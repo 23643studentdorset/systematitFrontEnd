@@ -14,6 +14,7 @@ const Chat = () => {
     const [currentUser, setCurrentUser] = useState({})
     const [message, setMessage] = useState("")
     const [messagesChanged, setMessagesChanged] = useState(false)
+    const [userName, setUserName] = useState("")
     const listRef = useRef();
     let currentUserId = jwt_decode(auth.accessToken).UserId
 
@@ -36,9 +37,9 @@ const Chat = () => {
             }
         }
         getUsers()
-       
+
         return () => {
-            
+
             isMountet = false
             controller.abort()
         }
@@ -75,6 +76,7 @@ const Chat = () => {
 
     const getUserIdAutocomplete = (value) => {
         //console.log(value)
+        setUserName(value)
         value !== "" ? setUserId(restOfUsers.find((userElement) => `${userElement.firstName} ${userElement.lastName}` === value).userId) : setUserId(0)
     }
 
@@ -85,7 +87,7 @@ const Chat = () => {
     }
 
     useEffect(() => {
-        listRef.current?.lastElementChild?.scrollIntoView();  
+        listRef.current?.lastElementChild?.scrollIntoView();
     }, [messages])
 
     const sendMessage = async () => {
@@ -110,12 +112,14 @@ const Chat = () => {
     }
 
     return (
-        <Paper sx={{ width: "45rem" }}>
+        <Paper sx={{ width: "50rem" }}>
+            
             <Grid container>
                 <Grid item xs={12} >
-                    <Typography variant="h5">Chat</Typography>
+                    <Typography variant="h5">{userName !== "" ? `Chatting with ${userName}` : "Chat"}</Typography>
                 </Grid>
             </Grid>
+
             <Grid container component={Paper}>
                 <Grid item xs={4}>
                     <List>
@@ -142,21 +146,23 @@ const Chat = () => {
                     </Grid>
                     <Divider />
                     <Grid>
-
-                    <List sx={{ overflow: 'auto', maxHeight: 200 }}>
-                        {restOfUsers.map(( user) => (
-                            <ListItemButton key={user.userId} onClick={() =>
-                                setUserId(user.userId)}>
-                                <ListItem >
-                                    <ListItemIcon>
-                                        <Avatar src={`https://material-ui.com/static/images/avatar/${user.userId}.jpg`} />
-                                    </ListItemIcon>
-                                    <ListItemText primary={`${user.firstName} ${user.lastName}`}></ListItemText>
-                                </ListItem>
-                            </ListItemButton>
-                        ))}
-                    </List>
-                        </Grid>
+                        <List sx={{ overflow: 'auto', maxHeight: 200 }}>
+                            {restOfUsers.map((user) => (
+                                <ListItemButton key={user.userId} onClick={() => {
+                                    setUserName(`${user.firstName} ${user.lastName}`)
+                                    setUserId(user.userId)
+                                }
+                                }>
+                                    <ListItem >
+                                        <ListItemIcon>
+                                            <Avatar src={`https://material-ui.com/static/images/avatar/${user.userId}.jpg`} />
+                                        </ListItemIcon>
+                                        <ListItemText primary={`${user.firstName} ${user.lastName}`}></ListItemText>
+                                    </ListItem>
+                                </ListItemButton>
+                            ))}
+                        </List>
+                    </Grid>
                 </Grid>
                 <Grid item xs={8}>
                     <List sx={{ overflow: 'auto', height: 275 }} ref={listRef}>
@@ -169,7 +175,7 @@ const Chat = () => {
                                                 `${currentUser.firstName} ${currentUser.lastName}` :
                                                 `${message.sender.firstName} ${message.sender.lastName}`} />
 
-                                        <ListItemText sx={{ backgroundColor: currentUserId == message.sender.userId ? "#eef7fe" : "#eeeefe", border: 1, padding: "0.3em", borderRadius: '0.7em', maxWidth: "20em"}}
+                                        <ListItemText sx={{ backgroundColor: currentUserId == message.sender.userId ? "#eef7fe" : "#eeeefe", border: 1, padding: "0.3em", borderRadius: '0.7em', maxWidth: "20em" }}
                                             primary={`${message.content}`} align="left"
                                             style={currentUserId == message.sender.userId ? { 'borderBottomRightRadius': "0%" } : { 'borderBottomLeftRadius': "0%" }} />
                                         <ListItemText secondary={`${formatDate(message.time)}`} />
@@ -184,7 +190,7 @@ const Chat = () => {
                         <Grid item xs={11}>
                             <TextField
                                 id="TypeSomething"
-                                label="Type Something"                               
+                                label="Type Something"
                                 fullWidth
                                 onChange={(e) => setMessage(e.target.value)}
                                 value={message} />
