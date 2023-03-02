@@ -10,6 +10,7 @@ import access from "../../../images/Access.jpg"
 import { useState, useEffect } from "react"
 import ManageStores from "../../ManageStores/ManageStores";
 import UpdateRoles from "../../UpdateRoles";
+import axios from "../../../../Api/axios";
 
 export default function UserView() {
     const [displayFeatures, setDisplayFeatures] = useState(true)
@@ -17,13 +18,35 @@ export default function UserView() {
     const [displayMessages, setDisplayMessages] = useState(false)
     const [displayManageStores, setDisplayManageStores] = useState(false)
     const [displayChangeRoles, setDisplayChangeRoles] = useState(false)
+    const [userName, setUserName] = useState("")
 
     const { auth } = useAuth()
     const decoded = jwt_decode(auth.accessToken)
-    
+
     //console.log(decoded)
     const roles = decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]
-   
+
+
+    useEffect(() => {
+        const getUser = async () => {
+            try {
+                const response = await axios.get(`/api/User/id?id=${decoded.UserId}`,
+                    {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Access-Control-Allow-Origin': 'https://localhost:3000',
+                            'Authorization': `Bearer ${auth.accessToken}`
+                        }
+                    })
+                //console.log(response?.data)
+                setUserName(response?.data.firstName)            
+            } catch (err) {
+                console.log(err)
+            }
+        }
+        getUser()
+    }, [])
+
 
     //console.log("Roles:" + roles)
 
@@ -90,14 +113,14 @@ export default function UserView() {
 
     return (
         <>
-           
-            <Button sx={{color:"textDark.main"}} onClick={handleDisplays}><h1>Dashboard</h1></Button>
-                    
+
+            <Button sx={{ color: "textDark.main" }} onClick={handleDisplays}><h1>{userName} Dashboard</h1></Button>
+
             <Box display="flex">
                 {roles.includes("Regular") && displayFeatures ?
                     <>
                         {regularFeatures.map((feature) => (
-                            <Card key={feature.id} sx={{ width: "21rem", height: "19rem", marginRight: "2rem"}}>
+                            <Card key={feature.id} sx={{ width: "21rem", height: "19rem", marginRight: "2rem" }}>
                                 <CardActionArea onClick={feature.event} >
                                     <CardMedia sx={{ opacity: .8 }}
                                         component="img"
@@ -105,31 +128,7 @@ export default function UserView() {
                                         image={feature.image}
                                         alt={`${feature.title} Image`}
                                     />
-                                    <CardContent sx={{height:"19rem"}}>
-                                        <Typography gutterBottom variant="h5" component="div">
-                                            {feature.title}
-                                        </Typography>
-                                        <Typography variant="body2" color="text.secondary">
-                                            {feature.description}
-                                        </Typography>
-                                    </CardContent>
-                                </CardActionArea>
-                            </Card>
-                        ))}
-                   </>
-                    : null}
-                {roles.includes("Manager") && displayFeatures ?
-                    <>
-                        {managerFeatures.map((feature) => (
-                            <Card key={feature.id} sx={{ width: "21rem", height: "19rem", marginRight: "2rem" }}>
-                                <CardActionArea onClick={feature.event}>
-                                    <CardMedia sx={{ opacity: .8 }}
-                                        component="img"
-                                        height="140"
-                                        image={feature.image}
-                                        alt={`${feature.title} Image`}
-                                    />
-                                    <CardContent sx={{height:"15rem"}}>
+                                    <CardContent sx={{ height: "19rem" }}>
                                         <Typography gutterBottom variant="h5" component="div">
                                             {feature.title}
                                         </Typography>
@@ -142,7 +141,31 @@ export default function UserView() {
                         ))}
                     </>
                     : null}
-                     {roles.includes("Admin") && displayFeatures ?
+                {roles.includes("Manager") && displayFeatures ?
+                    <>
+                        {managerFeatures.map((feature) => (
+                            <Card key={feature.id} sx={{ width: "21rem", height: "19rem", marginRight: "2rem" }}>
+                                <CardActionArea onClick={feature.event}>
+                                    <CardMedia sx={{ opacity: .8 }}
+                                        component="img"
+                                        height="140"
+                                        image={feature.image}
+                                        alt={`${feature.title} Image`}
+                                    />
+                                    <CardContent sx={{ height: "15rem" }}>
+                                        <Typography gutterBottom variant="h5" component="div">
+                                            {feature.title}
+                                        </Typography>
+                                        <Typography variant="body2" color="text.secondary">
+                                            {feature.description}
+                                        </Typography>
+                                    </CardContent>
+                                </CardActionArea>
+                            </Card>
+                        ))}
+                    </>
+                    : null}
+                {roles.includes("Admin") && displayFeatures ?
                     <>
                         {adminFeatures.map((feature) => (
                             <Card key={feature.id} sx={{ width: "21rem", height: "19rem", marginRight: "2rem" }}>
@@ -153,7 +176,7 @@ export default function UserView() {
                                         image={feature.image}
                                         alt={`${feature.title} Image`}
                                     />
-                                    <CardContent sx={{height:"15rem"}}>
+                                    <CardContent sx={{ height: "15rem" }}>
                                         <Typography gutterBottom variant="h5" component="div">
                                             {feature.title}
                                         </Typography>
@@ -169,7 +192,7 @@ export default function UserView() {
             </Box>
             {displayKanban ? <KanbanSearch /> : null}
             {displayMessages ? <Chat /> : null}
-            {displayManageStores ? <ManageStores/> : null}
+            {displayManageStores ? <ManageStores /> : null}
             {displayChangeRoles ? <UpdateRoles /> : null}
         </>
     )
