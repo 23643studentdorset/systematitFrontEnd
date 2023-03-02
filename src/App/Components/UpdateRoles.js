@@ -91,7 +91,7 @@ const UpdateRoles = () => {
 
     const showRolesHandler = (value) => {
         //console.log(value)
-        setAvailableRoles([])
+        //setAvailableRoles([])
         setShowRoles(false)
         if (value !== "") {
             let searchUser = users.find((user) => `${user.firstName} ${user.lastName}` === value)
@@ -103,8 +103,7 @@ const UpdateRoles = () => {
     }
 
     const handleGrantSubmit = async (userRole) => {
-        //console.log(userRole)
-        //console.log(enumRoles[userRole])
+        availableRoles.filter(role => role.roleName === userRole)
         try {
             const response = await axios.post("/api/UserRoles/RoleId", JSON.stringify({
                 userId: userId,
@@ -127,8 +126,6 @@ const UpdateRoles = () => {
     }
 
     const handleDeleteSubmit = async (userRole) => {
-        console.log(userRole)
-        console.log(enumRoles[userRole])
         try {
             const response = await axios.delete("/api/UserRoles/RoleId",
                 {
