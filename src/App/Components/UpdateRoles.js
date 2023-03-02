@@ -55,6 +55,7 @@ const UpdateRoles = () => {
     }, [])
 
     const getUserDetails = async (userId) => {
+        setAvailableRoles([])
         try {
             const response = await axios.get(`/api/User/Detailed/id?id=${userId}`,
                 {
