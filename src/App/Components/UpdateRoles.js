@@ -13,18 +13,15 @@ const UpdateRoles = () => {
     const [showRoles, setShowRoles] = useState(false)
     const [roles, setRoles] = useState([])
     const [expanded, setExpanded] = React.useState(false);
-    const [userRole, setUserRole] = useState("")
+    const [userId, setUserId] = useState(null)
 
-    const enumeRoles = Object.freeze({
+    const enumRoles = Object.freeze({
         "Admin": 1,
         "Manager": 2,
         "Regular": 3,
     })
 
-    const availableRoles = [
-        { "roleName": "Admin", "roleId": enumeRoles.Admin },
-        { "roleName": "Manager", "roleId": enumeRoles.Manager },
-        { "roleName": "Regular", "roleId": enumeRoles.Regular }]
+    const [availableRoles, setAvailableRoles] = useState([])
 
     const handleChange = (panel) => (event, isExpanded) => {
         setExpanded(isExpanded ? panel : false);
@@ -69,7 +66,21 @@ const UpdateRoles = () => {
                 })
             //console.log(response?.data.userRoles)
             setRoles(response?.data.userRoles)
-            //console.log(availableRoles.filter((role) => role.roleName !== response?.data.userRoles[0].roleName))
+            let searchAdmin = response?.data.userRoles.find(role => role.roleName === "Admin")
+            searchAdmin === undefined
+                ? setAvailableRoles([...availableRoles, { "roleName": "Admin" }])
+                : console.log("Admin already exists")
+
+            let searchManager = response?.data.userRoles.find(role => role.roleName === "Manager")
+            searchManager === undefined
+                ? setAvailableRoles([...availableRoles, { "roleName": "Manager" }])
+                : console.log("Manager already exists")
+
+            let searchRegular = response?.data.userRoles.find(role => role.roleName === "Regular")
+            searchRegular === undefined
+                ? setAvailableRoles([...availableRoles, { "roleName": "Regular" }])
+                : console.log("Regular already exists")
+
             setShowRoles(true)
         } catch (err) {
             console.log(err)
@@ -79,17 +90,68 @@ const UpdateRoles = () => {
 
     const showRolesHandler = (value) => {
         //console.log(value)
-        let seachUser = users.find((user) => `${user.firstName} ${user.lastName}` === value)
-        //console.log(seachUser)
-        seachUser !== undefined ? getUserDetails(seachUser.userId) : setShowRoles(false)
+        setAvailableRoles([])
+        setShowRoles(false)
+        if (value !== "") {
+            let searchUser = users.find((user) => `${user.firstName} ${user.lastName}` === value)
+            setUserId(searchUser.userId)
+            //console.log(seachUser)
+            searchUser !== undefined ? getUserDetails(searchUser.userId) : setShowRoles(false)
+        }
+
     }
 
-    const handleSubmit = async () => {
-        console.log(enumeRoles[userRole])
+    const handleGrantSubmit = async (userRole) => {
+        //console.log(userRole)
+        //console.log(enumRoles[userRole])
+        try {
+            const response = await axios.post("/api/UserRoles/RoleId", JSON.stringify({
+                userId: userId,
+                roleId: enumRoles[userRole],
+
+            }),
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Origin': 'https://localhost:3000',
+                        'Authorization': `Bearer ${auth.accessToken}`
+                    }
+                });
+            //console.log(response?.data)
+            getUserDetails(userId)
+
+        } catch (error) {
+            console.log(error)
+        }
     }
+
+    const handleDeleteSubmit = async (userRole) => {
+        console.log(userRole)
+        console.log(enumRoles[userRole])
+        try {
+            const response = await axios.delete("/api/UserRoles/RoleId",
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Origin': 'https://localhost:3000',
+                        'Authorization': `Bearer ${auth.accessToken}`
+                    },
+                    data: JSON.stringify({
+                        userId: userId,
+                        roleId: enumRoles[userRole],
+                    })
+                });
+            //console.log(response?.data)
+            getUserDetails(userId)
+
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
 
     return (
-        <Box sx={{alignItems: 'center', textAlign: "center" }}>
+        <Box sx={{ alignItems: 'center', textAlign: "center" }}>
             <h1>Update user roles</h1>
             <Box sx={{ display: "flex", width: "45rem" }}>
                 <Autocomplete
@@ -109,15 +171,53 @@ const UpdateRoles = () => {
                             aria-controls="panel1bh-content"
                             id="panel1bh-header">
                             <Typography sx={{ flexShrink: 0 }}>
-                                Current Roles
+                                Current roles
                             </Typography>
                         </AccordionSummary>
                         <AccordionDetails>
-                            <Box sx={{ marginRight: "2rem" }}>
+                            <Box >
                                 {roles.map((role) => (
                                     <ListItem divider>
                                         <ListItemText variant="standard" >{role.roleName}</ListItemText>
+                                        <Button
+                                            sx={{ marginLeft: "1rem" }}
+                                            color="error"
+                                            variant='outlined'
+                                            size="small"
+                                            onClick={() => handleDeleteSubmit(role.roleName)}
+                                        >Remove</Button>
                                     </ListItem>
+
+                                ))}
+                            </Box>
+                        </AccordionDetails>
+                    </Accordion>
+                </Box>
+                    : null}
+
+                {showRoles ? <Box>
+                    <Accordion expanded={expanded === 'panel2'} onChange={handleChange('panel2')}>
+                        <AccordionSummary
+                            expandIcon={<ExpandMoreIcon />}
+                            aria-controls="panel1bh-content"
+                            id="panel1bh-header">
+                            <Typography sx={{ flexShrink: 0 }}>
+                                Available roles
+                            </Typography>
+                        </AccordionSummary>
+                        <AccordionDetails>
+                            <Box >
+                                {availableRoles.map((role) => (
+                                    <ListItem divider>
+                                        <ListItemText variant="standard" >{role.roleName}</ListItemText>
+                                        <Button
+                                            sx={{ marginLeft: "1rem" }}
+                                            variant='outlined'
+                                            size="small"
+                                            onClick={() => handleGrantSubmit(role.roleName)}
+                                        >Grant</Button>
+                                    </ListItem>
+
                                 ))}
                             </Box>
                         </AccordionDetails>
@@ -126,19 +226,8 @@ const UpdateRoles = () => {
                     : null}
 
 
-                {showRoles ? <Autocomplete
-                    key={availableRoles.roleId}
-                    defaultValue={""}
-                    sx={{ width: "35%", marginRight: "2rem" }}
-                    id="Roles"
-                    options={availableRoles.map((option) => option.roleName)}
-                    renderInput={(params) => <TextField {...params} label="Available roles" variant="standard" />}
-                    onInputChange={(_, value) => { setUserRole(value)}}
-                />
-                    : null}
-                
             </Box>
-            <Button sx={{marginTop:"2rem"}} variant="outlined" onClick={handleSubmit}>Update</Button>
+
         </Box>
 
     )
