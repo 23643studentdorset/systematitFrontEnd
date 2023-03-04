@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 export default function NavBarNotLogedIn() {
   return (
     <nav className="nav">
-      <Button color="textLight"><Link to="/" className="site-title">SystematIT</Link></Button>
+      <Button color="textLight"><Link to="/home" className="site-title">SystematIT</Link></Button>
       <Box sx={{ p: 2.5 }}>
         <Button color="textLight"><CustomLink to="/services">Services</CustomLink></Button>
         <Button color="textLight"><CustomLink to="/about">About us</CustomLink></Button>

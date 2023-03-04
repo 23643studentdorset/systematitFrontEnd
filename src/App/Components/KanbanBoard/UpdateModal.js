@@ -87,7 +87,7 @@ function UpdateModal({ taskId, setShowUpdateModal, renderColumn }) {
                 })
                 //isMountet && setTask(response?.data)
                 isMountet && setTaskTitle(response?.data.title)
-                console.log(response?.data)
+                //console.log(response?.data)
                 response?.data.taskStatus.name === "ToDo" ? isMountet && setTaskStatus("To Do") :
                     response?.data.taskStatus.name === "InProgress" ? isMountet && setTaskStatus("In Progress") :
                         isMountet && setTaskStatus(response?.data.taskStatus.name)
@@ -181,10 +181,11 @@ function UpdateModal({ taskId, setShowUpdateModal, renderColumn }) {
         if (taskTitle.length > 0 && taskStatus.length > 0
             && taskDepartment.length > 0 && taskAssignee.length > 0
             && taskDescription.length > 0) {
-            console.log("oldTaskStatus: " + oldTaskStatus)
-            console.log("taskStatus: " + taskStatus)
+            //console.log("oldTaskStatus: " + oldTaskStatus)
+            //console.log("taskStatus: " + taskStatus)
             updateTask()           
             renderColumn(taskStatus.replace(/\s+/g, ''), oldTaskStatus)
+           
             setShowUpdateModal(false)
         }
 
@@ -269,7 +270,7 @@ function UpdateModal({ taskId, setShowUpdateModal, renderColumn }) {
                                 <Box>
                                     {index !== 0 ? <Divider variant="middle" /> : null}
                                     <ListItem
-                                        key={index}
+                                        key={c.commentId}
                                         alignItems="flex-start">
                                         <Tooltip title={`Sender ${c.user.firstName} ${c.user.lastName}`}>
                                             <Box sx={{

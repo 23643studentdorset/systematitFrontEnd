@@ -168,13 +168,9 @@ const Register = () => {
             handleClick("error")
             if (!error?.response) {
                 setErrMsg("No server response");
-            } else if (error.response?.status === 409) {
-                setErrMsg("Email already exists");
-            } else {
-
-                setErrMsg("Registration failed");
+            } else{
+                setErrMsg(`${error.response?.data}`);
             }
-            errorRef.current.focus();
         }
     }
 
@@ -191,10 +187,10 @@ const Register = () => {
                 </Alert>
             </Snackbar>
             {success ? (
-                /*
+                
                 <Navigate to="/Login" replace={true} />
-                */
-                null
+                
+            
             ) : (
                 <Box component="form"
                     sx={{ '& .MuiTextField-root': { m: 1.25 }, }}>

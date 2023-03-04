@@ -4,12 +4,11 @@ import Contact from './App/Components/Pages/Contact';
 import {Route, Routes} from 'react-router-dom';
 import { createTheme, ThemeProvider } from '@mui/material';
 import UserView from './App/Components/Pages/ProtectedRoutes/UserView';
-import AdminView from './App/Components/Pages/ProtectedRoutes/AdminView';
-import ManagerView from './App/Components/Pages/ProtectedRoutes/ManagerView';
 import NotFound from './App/errors/NotFound';
 import Login from './App/Components/Login/Login';
 import Register from './App/Components/RegisterUser/Register'
 import Services from './App/Components/Pages/Services';
+import Home from './App/Components/Pages/Home';
 import Layout from './App/Components/Pages/Layout';
 import RequiredAuth from './App/Components/Pages/ProtectedRoutes/RequiredAuth';
 
@@ -40,17 +39,12 @@ function App() {
           <Routes>
             <Route path= "/" element={<Layout />}>
               <Route exact path="about" element={<About />} />
+              <Route exact path="home" element={<Home />} />
               <Route exact path="contact" element={<Contact />} />
               <Route exact path="services" element={<Services />} />
               <Route exact path="login" element={<Login />} />
               <Route exact path="register" element={<Register />} />              
               <Route path="*" element={<NotFound />}/>              
-              <Route element={<RequiredAuth allowedRoles = {"Admin"}/>}>
-                  <Route exact path="AdminView" element={<AdminView />} />
-              </Route>
-              <Route element={<RequiredAuth allowedRoles = {"Manager"}/>}>
-                <Route exact path="ManagerView" element={<ManagerView />} />
-              </Route>
               <Route element={<RequiredAuth allowedRoles = {"Regular"}/>}>
                 <Route exact path="userView" element={<UserView />} />
               </Route>

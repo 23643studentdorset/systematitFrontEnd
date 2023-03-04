@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Autocomplete, TextField, Box, Typography, ListItem, ListItemText, Accordion, AccordionSummary, AccordionDetails, Button } from '@mui/material'
+import {Snackbar, Alert, Autocomplete, TextField, Box, Typography, ListItem, ListItemText, Accordion, AccordionSummary, AccordionDetails, Button } from '@mui/material'
 import axios from "../../Api/axios"
 import useAuth from "../../hooks/useAuth"
 import jwt_decode from "jwt-decode"
@@ -14,6 +14,9 @@ const UpdateRoles = () => {
     const [roles, setRoles] = useState([])
     const [expanded, setExpanded] = React.useState(false);
     const [userId, setUserId] = useState(null)
+    const [msg, setMsg] = useState("")
+    const [openError, setOpenError] = React.useState(false);
+    const [openSuccess, setOpenSuccess] = React.useState(false);
 
     const enumRoles = Object.freeze({
         "Admin": 1,
@@ -117,11 +120,13 @@ const UpdateRoles = () => {
                         'Authorization': `Bearer ${auth.accessToken}`
                     }
                 });
-            //console.log(response?.data)
+            setMsg(response?.data)
             getUserDetails(userId)
-
+            handleClick("success")
         } catch (error) {
             console.log(error)
+            setMsg(error?.response?.data)
+            handleClick("error")
         }
     }
 
@@ -139,95 +144,124 @@ const UpdateRoles = () => {
                         roleId: enumRoles[userRole],
                     })
                 });
-            //console.log(response?.data)
+            setMsg(response?.data)
             getUserDetails(userId)
+            handleClick("success")
 
         } catch (error) {
             console.log(error)
+            handleClick("error")
         }
     }
 
+    const handleClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setOpenSuccess(false);
+        setOpenError(false);
+    };
+
+    const handleClick = (option) => {
+        if (option === "success")
+            setOpenSuccess(true);
+        if (option === "error")
+            setOpenError(true);
+    };
+
 
     return (
-        <Box sx={{ alignItems: 'center', textAlign: "center" }}>
-            <h1>Update user roles</h1>
-            <Box sx={{ display: "flex", width: "45rem" }}>
-                <Autocomplete
-                    key={users.userId}
-                    defaultValue={""}
-                    sx={{ width: "35%", marginRight: "2rem" }}
-                    id="Users"
-                    options={users.map((option) => `${option.firstName} ${option.lastName}`)}
-                    renderInput={(params) => <TextField {...params} label="users" variant="standard" />}
-                    onInputChange={(_, value) => { showRolesHandler(value) }}
-                />
+        <>
+            <Snackbar anchorOrigin={{ vertical: 'top', horizontal: 'center' }} open={openSuccess} autoHideDuration={6000} onClose={handleClose}>
+                <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
+                    User Roles updated successfully!
+                </Alert>
+            </Snackbar>
+            <Snackbar anchorOrigin={{ vertical: 'top', horizontal: 'center' }} open={openError} autoHideDuration={6000} onClose={handleClose}>
+                <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
+                    Ups there is a problem... {msg}
+                </Alert>
+            </Snackbar>
+            <Box sx={{ alignItems: 'center', textAlign: "center" }}>
+                <h1>Update user roles</h1>
+                <Box sx={{ display: "flex", width: "45rem" }}>
+                    <Autocomplete
+                        key={users.userId}
+                        defaultValue={""}
+                        sx={{ width: "35%", marginRight: "2rem" }}
+                        id="Users"
+                        options={users.map((option) => `${option.firstName} ${option.lastName}`)}
+                        renderInput={(params) => <TextField {...params} label="users" variant="standard" />}
+                        onInputChange={(_, value) => { showRolesHandler(value) }}
+                    />
 
-                {showRoles ? <Box sx={{ marginRight: "2rem" }}>
-                    <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
-                        <AccordionSummary
-                            expandIcon={<ExpandMoreIcon />}
-                            aria-controls="panel1bh-content"
-                            id="panel1bh-header">
-                            <Typography sx={{ flexShrink: 0 }}>
-                                Current roles
-                            </Typography>
-                        </AccordionSummary>
-                        <AccordionDetails>
-                            <Box >
-                                {roles.map((role) => (
-                                    <ListItem divider>
-                                        <ListItemText variant="standard" >{role.roleName}</ListItemText>
-                                        <Button
-                                            sx={{ marginLeft: "1rem" }}
-                                            color="error"
-                                            variant='outlined'
-                                            size="small"
-                                            onClick={() => handleDeleteSubmit(role.roleName)}
-                                        >Remove</Button>
-                                    </ListItem>
+                    {showRoles ? <Box sx={{ marginRight: "2rem" }}>
+                        <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
+                            <AccordionSummary
+                                expandIcon={<ExpandMoreIcon />}
+                                aria-controls="panel1bh-content"
+                                id="panel1bh-header">
+                                <Typography sx={{ flexShrink: 0 }}>
+                                    Current roles
+                                </Typography>
+                            </AccordionSummary>
+                            <AccordionDetails>
+                                <Box >
+                                    {roles.map((role) => (
+                                        <ListItem divider>
+                                            <ListItemText variant="standard" >{role.roleName}</ListItemText>
+                                            <Button
+                                                sx={{ marginLeft: "1rem" }}
+                                                color="error"
+                                                variant='outlined'
+                                                size="small"
+                                                onClick={() => handleDeleteSubmit(role.roleName)}
+                                            >Remove</Button>
+                                        </ListItem>
 
-                                ))}
-                            </Box>
-                        </AccordionDetails>
-                    </Accordion>
+                                    ))}
+                                </Box>
+                            </AccordionDetails>
+                        </Accordion>
+                    </Box>
+                        : null}
+
+                    {showRoles ? <Box>
+                        <Accordion expanded={expanded === 'panel2'} onChange={handleChange('panel2')}>
+                            <AccordionSummary
+                                expandIcon={<ExpandMoreIcon />}
+                                aria-controls="panel1bh-content"
+                                id="panel1bh-header">
+                                <Typography sx={{ flexShrink: 0 }}>
+                                    Available roles
+                                </Typography>
+                            </AccordionSummary>
+                            <AccordionDetails>
+                                <Box >
+                                    {availableRoles.map((role) => (
+                                        <ListItem divider>
+                                            <ListItemText variant="standard" >{role.roleName}</ListItemText>
+                                            <Button
+                                                sx={{ marginLeft: "1rem" }}
+                                                variant='outlined'
+                                                size="small"
+                                                onClick={() => handleGrantSubmit(role.roleName)}
+                                            >Grant</Button>
+                                        </ListItem>
+
+                                    ))}
+                                </Box>
+                            </AccordionDetails>
+                        </Accordion>
+                    </Box>
+                        : null}
+
+
                 </Box>
-                    : null}
-
-                {showRoles ? <Box>
-                    <Accordion expanded={expanded === 'panel2'} onChange={handleChange('panel2')}>
-                        <AccordionSummary
-                            expandIcon={<ExpandMoreIcon />}
-                            aria-controls="panel1bh-content"
-                            id="panel1bh-header">
-                            <Typography sx={{ flexShrink: 0 }}>
-                                Available roles
-                            </Typography>
-                        </AccordionSummary>
-                        <AccordionDetails>
-                            <Box >
-                                {availableRoles.map((role) => (
-                                    <ListItem divider>
-                                        <ListItemText variant="standard" >{role.roleName}</ListItemText>
-                                        <Button
-                                            sx={{ marginLeft: "1rem" }}
-                                            variant='outlined'
-                                            size="small"
-                                            onClick={() => handleGrantSubmit(role.roleName)}
-                                        >Grant</Button>
-                                    </ListItem>
-
-                                ))}
-                            </Box>
-                        </AccordionDetails>
-                    </Accordion>
-                </Box>
-                    : null}
-
 
             </Box>
 
-        </Box>
-
+        </>
     )
 }
 
