@@ -75,7 +75,7 @@ const DeleteStore = () => {
         let storeId = stores.find((store) => store.name === storeName).storeId
         //console.log("Deleted store number: "+ storeId)
         try {
-            const response = await axios.delete(`/api/Store/${storeId}`, {
+            const response = await axios.delete(`/api/Store/id?id=${storeId}`, {
                 headers: {
                     'Content-Type': 'application/json',
                     'Access-Control-Allow-Origin': 'https://localhost:3000',
